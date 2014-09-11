@@ -1,6 +1,10 @@
 Mopidy.js
 =========
 
+[![Latest npm version](https://img.shields.io/npm/v/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
+[![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
+[![Build Status](https://img.shields.io/travis/mopidy/mopidy.js.svg?style=flat)](https://travis-ci.org/mopidy/mopidy.js)
+
 Mopidy.js is a JavaScript library that is installed as a part of Mopidy's HTTP
 frontend or from npm. The library makes Mopidy's core API available from the
 browser or a Node.js environment, using JSON-RPC messages over a WebSocket to
