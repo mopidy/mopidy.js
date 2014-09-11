@@ -80,6 +80,10 @@ To run other [grunt](http://gruntjs.com/) targets which isn't predefined in
 Changelog
 ---------
 
+### 0.4.1 (UNRELEASED)
+
+- Update links to point to new independent Mopidy.js GitHub project.
+
 ### 0.4.0 (2014-06-24)
 
 - Add support for method calls with by-name arguments. The old calling

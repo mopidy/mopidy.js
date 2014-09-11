@@ -1,6 +1,6 @@
 {
   "name": "mopidy",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Client lib for controlling a Mopidy music server over a WebSocket",
   "keywords": [
     "mopidy",
@@ -10,7 +10,7 @@
     "json-rpc"
   ],
   "homepage": "http://www.mopidy.com/",
-  "bugs": "https://github.com/mopidy/mopidy/issues",
+  "bugs": "https://github.com/mopidy/mopidy.js/issues",
   "license": "Apache-2.0",
   "author": {
     "name": "Stein Magnus Jodal",
@@ -31,7 +31,7 @@
   "main": "src/mopidy.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mopidy/mopidy.git"
+    "url": "git://github.com/mopidy/mopidy.js.git"
   },
   "scripts": {
     "test": "grunt test",
