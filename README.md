@@ -23,10 +23,10 @@ files are available at:
 
 You may need to adjust hostname and port for your local setup.
 
-In the source repo, you can find the files at:
+In the Mopidy.js source repo, you can find the files at:
 
-- `mopidy/http/data/mopidy.js`
-- `mopidy/http/data/mopidy.min.js`
+- `dist/mopidy.js`
+- `dist/mopidy.min.js`
 
 
 Getting it for Node.js use

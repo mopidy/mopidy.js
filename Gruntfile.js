@@ -13,8 +13,8 @@ module.exports = function (grunt) {
             files: {
                 own: ["Gruntfile.js", "src/**/*.js", "test/**/*-test.js"],
                 main: "src/mopidy.js",
-                concat: "../mopidy/http/data/mopidy.js",
-                minified: "../mopidy/http/data/mopidy.min.js"
+                concat: "dist/mopidy.js",
+                minified: "dist/mopidy.min.js"
             }
         },
         buster: {
