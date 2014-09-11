@@ -1,0 +1,5 @@
+*.orig
+*.swp
+*~
+test/lib/
+node_modules/
