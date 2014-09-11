@@ -84,7 +84,7 @@ To run other [grunt](http://gruntjs.com/) targets which isn't predefined in
 Changelog
 ---------
 
-### 0.4.1 (UNRELEASED)
+### 0.4.1 (2014-09-11)
 
 - Update links to point to new independent Mopidy.js GitHub project.
 
