@@ -28,14 +28,14 @@ Mopidy.ConnectionError = function (message) {
     this.name = "ConnectionError";
     this.message = message;
 };
-Mopidy.ConnectionError.prototype = new Error();
+Mopidy.ConnectionError.prototype = Object.create(Error.prototype);
 Mopidy.ConnectionError.prototype.constructor = Mopidy.ConnectionError;
 
 Mopidy.ServerError = function (message) {
     this.name = "ServerError";
     this.message = message;
 };
-Mopidy.ServerError.prototype = new Error();
+Mopidy.ServerError.prototype = Object.create(Error.prototype);
 Mopidy.ServerError.prototype.constructor = Mopidy.ServerError;
 
 Mopidy.WebSocket = websocket.Client;
