@@ -55,9 +55,8 @@ Building from source
 
         sudo apt-get install nodejs-legacy npm
 
-2. Enter the `js/` in Mopidy's Git repo dir and install all dependencies:
+2. Enter the source directory, and install all dependencies:
 
-        cd js/
         npm install
 
 That's it.
