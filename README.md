@@ -92,6 +92,8 @@ Changelog
   `https://`. This has no effect if the `webSocketUrl` setting is specified.
   (Pull request: #2)
 
+- Upgrade dependencies.
+
 ### 0.4.1 (2014-09-11)
 
 - Update links to point to new independent Mopidy.js GitHub project.
