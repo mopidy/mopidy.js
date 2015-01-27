@@ -88,6 +88,10 @@ Changelog
 - Reexport When.js library as `Mopidy.when`, to make it easily available to
   users of Mopidy.js. (Fixes: #1)
 
+- Default to `wss://` as the WebSocket protocol if the page is hosted on
+  `https://`. This has no effect if the `webSocketUrl` setting is specified.
+  (Pull request: #2)
+
 ### 0.4.1 (2014-09-11)
 
 - Update links to point to new independent Mopidy.js GitHub project.

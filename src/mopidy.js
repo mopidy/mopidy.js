@@ -57,10 +57,10 @@ Mopidy.prototype._getConsole = function (settings) {
 };
 
 Mopidy.prototype._configure = function (settings) {
-    var currentHost = (typeof document !== "undefined" &&
-        document.location.host) || "localhost";
     var protocol = (typeof document !== "undefined" &&
         document.location.protocol === "https:") ? "wss://" : "ws://";
+    var currentHost = (typeof document !== "undefined" &&
+        document.location.host) || "localhost";
     settings.webSocketUrl = settings.webSocketUrl ||
         protocol + currentHost + "/mopidy/ws";
 
