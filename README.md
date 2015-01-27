@@ -83,6 +83,11 @@ To run other [grunt](http://gruntjs.com/) targets which isn't predefined in
 Changelog
 ---------
 
+### 0.5.0 (UNRELEASED)
+
+- Reexport When.js library as `Mopidy.when`, to make it easily available to
+  users of Mopidy.js. (Fixes: #1)
+
 ### 0.4.1 (2014-09-11)
 
 - Update links to point to new independent Mopidy.js GitHub project.

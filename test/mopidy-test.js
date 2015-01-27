@@ -960,5 +960,9 @@ buster.testCase("Mopidy", {
                 );
             }
         }
+    },
+
+    "Reexports When.js": function() {
+        assert.equals(Mopidy.when(), when());
     }
 });

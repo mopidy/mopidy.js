@@ -40,6 +40,8 @@ Mopidy.ServerError.prototype.constructor = Mopidy.ServerError;
 
 Mopidy.WebSocket = websocket.Client;
 
+Mopidy.when = when;
+
 Mopidy.prototype._getConsole = function (settings) {
     if (typeof settings.console !== "undefined") {
         return settings.console;
