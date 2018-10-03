@@ -55,7 +55,7 @@ To run tests automatically when you save a file:
     npm start
 
 To run tests, concatenate, minify the source, and update the JavaScript files
-in `mopidy/http/data/`:
+in `dist/`:
 
     npm run-script build
 
