@@ -31,12 +31,12 @@ After npm completes, you can import Mopidy.js using ``require()``:
 
 ## Using the library
 
-See the [Mopidy.js documentation](http://docs.mopidy.com/en/latest/api/js/).
+See the [Mopidy.js documentation](https://docs.mopidy.com/en/latest/api/js/).
 
 
 ## Building from source
 
-1. Install [Node.js](http://nodejs.org/) and npm. If you're running Ubuntu:
+1. Install [Node.js](https://nodejs.org/) and npm. If you're running Ubuntu:
 
         sudo apt-get install nodejs-legacy npm
 
@@ -59,7 +59,7 @@ in `mopidy/http/data/`:
 
     npm run-script build
 
-To run other [grunt](http://gruntjs.com/) targets which isn't predefined in
+To run other [grunt](https://gruntjs.com/) targets which isn't predefined in
 `package.json` and thus isn't available through `npm run-script`:
 
     PATH=./node_modules/.bin:$PATH grunt foo
