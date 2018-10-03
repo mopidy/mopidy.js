@@ -12,19 +12,9 @@ communicate with Mopidy.
 
 ## Getting it for browser use
 
-Regular and minified versions of Mopidy.js, ready for use, is installed
-together with the Mopidy music server. When the HTTP frontend is running, the
-files are available at:
-
-- http://localhost:6680/mopidy/mopidy.js
-- http://localhost:6680/mopidy/mopidy.min.js
-
-You may need to adjust hostname and port for your local setup.
-
-In the Mopidy.js source repo, you can find the files at:
-
-- `dist/mopidy.js`
-- `dist/mopidy.min.js`
+Regular and minified versions of Mopidy.js, ready for use, is available from
+the project's
+[GitHub release page](https://github.com/mopidy/mopidy.js/releases).
 
 
 ## Getting it for Node.js use
