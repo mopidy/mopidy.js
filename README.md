@@ -1,5 +1,4 @@
-Mopidy.js
-=========
+# Mopidy.js
 
 [![Latest npm version](https://img.shields.io/npm/v/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
 [![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
@@ -11,8 +10,7 @@ browser or a Node.js environment, using JSON-RPC messages over a WebSocket to
 communicate with Mopidy.
 
 
-Getting it for browser use
---------------------------
+## Getting it for browser use
 
 Regular and minified versions of Mopidy.js, ready for use, is installed
 together with the Mopidy music server. When the HTTP frontend is running, the
@@ -29,8 +27,7 @@ In the Mopidy.js source repo, you can find the files at:
 - `dist/mopidy.min.js`
 
 
-Getting it for Node.js use
---------------------------
+## Getting it for Node.js use
 
 If you want to use Mopidy.js from Node.js instead of a browser, you can install
 Mopidy.js using npm:
@@ -42,14 +39,12 @@ After npm completes, you can import Mopidy.js using ``require()``:
     var Mopidy = require("mopidy");
 
 
-Using the library
------------------
+## Using the library
 
 See the [Mopidy.js documentation](http://docs.mopidy.com/en/latest/api/js/).
 
 
-Building from source
---------------------
+## Building from source
 
 1. Install [Node.js](http://nodejs.org/) and npm. If you're running Ubuntu:
 
@@ -80,8 +75,7 @@ To run other [grunt](http://gruntjs.com/) targets which isn't predefined in
     PATH=./node_modules/.bin:$PATH grunt foo
 
 
-Changelog
----------
+## Changelog
 
 ### 0.5.0 (2015-01-31)
 
