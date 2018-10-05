@@ -11,35 +11,13 @@ module.exports = function (grunt) {
                 "Stein Magnus Jodal and contributors\n" +
                 " * Licensed under the Apache License, Version 2.0 */\n",
             files: {
-                own: ["Gruntfile.js", "src/**/*.js", "test/**/*-test.js"],
+                own: ["Gruntfile.js", "src/**/*.js"],
                 main: "src/mopidy.js",
                 concat: "dist/mopidy.js",
                 minified: "dist/mopidy.min.js"
             }
         },
-        buster: {
-            all: {}
-        },
         browserify: {
-            test_mopidy: {
-                files: {
-                    "test/lib/mopidy.js": "<%= meta.files.main %>"
-                },
-                options: {
-                    postBundleCB: function (err, src, next) {
-                        next(err, grunt.template.process("<%= meta.banner %>") + src);
-                    },
-                    standalone: "Mopidy"
-                }
-            },
-            test_when: {
-                files: {
-                    "test/lib/when.js": "node_modules/when/when.js"
-                },
-                options: {
-                    standalone: "when"
-                }
-            },
             dist: {
                 files: {
                     "<%= meta.files.concat %>": "<%= meta.files.main %>"
@@ -88,12 +66,10 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask("test_build", ["browserify:test_when", "browserify:test_mopidy"]);
-    grunt.registerTask("test", ["jshint", "test_build", "buster"]);
+    grunt.registerTask("test", ["jshint"]);
     grunt.registerTask("build", ["test", "browserify:dist", "uglify"]);
     grunt.registerTask("default", ["build"]);
 
-    grunt.loadNpmTasks("grunt-buster");
     grunt.loadNpmTasks("grunt-browserify");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-uglify");
