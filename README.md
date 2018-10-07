@@ -18,13 +18,29 @@ the project's
 ## Getting it for Node.js use
 
 If you want to use Mopidy.js from Node.js instead of a browser, you can install
-Mopidy.js using npm:
+Mopidy.js using Yarn:
 
-    npm install mopidy
+```
+yarn add mopidy
+```
 
-After npm completes, you can import Mopidy.js using `require()`:
+Or using npm:
 
-    var Mopidy = require("mopidy");
+```
+npm install mopidy
+```
+
+After installing, you can import Mopidy.js into your code using `require()`:
+
+```js
+const Mopidy = require("mopidy");
+```
+
+Or using ES6 imports:
+
+```js
+import Mopidy from "mopidy";
+```
 
 ## Using the library
 
@@ -32,33 +48,27 @@ See the [Mopidy.js documentation](https://docs.mopidy.com/en/latest/api/js/).
 
 ## Building from source
 
-1.  Install [Node.js](https://nodejs.org/) and npm. If you're running Ubuntu:
+Install [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
 
-        sudo apt-get install nodejs-legacy npm
+Enter the source directory, and install all dependencies:
 
-2.  Enter the source directory, and install all dependencies:
-
-        npm install
+```
+yarn
+```
 
 That's it.
 
-You can now run the tests:
+You can now run the tests and linters:
 
-    npm test
+```
+yarn test
+```
 
-To run tests automatically when you save a file:
+To build updated JavaScript files for browser use in `dist/`, run:
 
-    npm start
-
-To run tests, concatenate, minify the source, and update the JavaScript files
-in `dist/`:
-
-    npm run-script build
-
-To run other [grunt](https://gruntjs.com/) targets which isn't predefined in
-`package.json` and thus isn't available through `npm run-script`:
-
-    PATH=./node_modules/.bin:$PATH grunt foo
+```
+yarn build
+```
 
 ## Changelog
 
