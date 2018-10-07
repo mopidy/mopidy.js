@@ -1,12 +1,12 @@
 module.exports = {
   env: {
-    "shared-node-browser": true
+    "shared-node-browser": true,
   },
-  extends: "airbnb-base",
+  extends: ["airbnb-base", "plugin:prettier/recommended"],
   globals: {
-    document: true
+    document: true,
   },
   rules: {
-    "no-underscore-dangle": "off"
-  }
+    "no-underscore-dangle": "off",
+  },
 };
