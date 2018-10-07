@@ -30,26 +30,6 @@ module.exports = function (grunt) {
                 }
             }
         },
-        jshint: {
-            options: {
-                curly: true,
-                eqeqeq: true,
-                immed: true,
-                indent: 4,
-                latedef: true,
-                newcap: true,
-                noarg: true,
-                sub: true,
-                quotmark: "double",
-                undef: true,
-                unused: true,
-                eqnull: true,
-                browser: true,
-                devel: true,
-                globals: {}
-            },
-            files: "<%= meta.files.own %>"
-        },
         uglify: {
             options: {
                 banner: "<%= meta.banner %>"
@@ -66,12 +46,10 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask("test", ["jshint"]);
-    grunt.registerTask("build", ["test", "browserify:dist", "uglify"]);
+    grunt.registerTask("build", ["browserify:dist", "uglify"]);
     grunt.registerTask("default", ["build"]);
 
     grunt.loadNpmTasks("grunt-browserify");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-watch");
 };
