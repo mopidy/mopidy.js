@@ -86,6 +86,14 @@ yarn build
   const Mopidy = new Mopidy(...);
   ```
 
+- Modernized development stack:
+
+  - Testing: Jest has replaced Buster.JS and Sinon.
+  - Linting: ESLint has replaced JSHint.
+  - Building: Parcel has replaced Browserify and Uglify.
+  - Tasks: npm scripts has replaced Grunt.
+  - Formatting: Prettier has replaced manual formatting.
+
 ### 0.5.0 (2015-01-31)
 
 - Reexport When.js library as `Mopidy.when`, to make it easily available to
