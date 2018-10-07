@@ -90,7 +90,7 @@ describe("constructor", () => {
     expect(warn).not.toBeCalled();
   });
 
-  test("works without 'new' keyword", () => {
+  test.skip("works without 'new' keyword", () => {
     const mopidy = Mopidy({
       callingConvention: "by-position-or-by-name",
     });

@@ -9,13 +9,11 @@ frontend or from npm. The library makes Mopidy's core API available from the
 browser or a Node.js environment, using JSON-RPC messages over a WebSocket to
 communicate with Mopidy.
 
-
 ## Getting it for browser use
 
 Regular and minified versions of Mopidy.js, ready for use, is available from
 the project's
 [GitHub release page](https://github.com/mopidy/mopidy.js/releases).
-
 
 ## Getting it for Node.js use
 
@@ -24,23 +22,21 @@ Mopidy.js using npm:
 
     npm install mopidy
 
-After npm completes, you can import Mopidy.js using ``require()``:
+After npm completes, you can import Mopidy.js using `require()`:
 
     var Mopidy = require("mopidy");
-
 
 ## Using the library
 
 See the [Mopidy.js documentation](https://docs.mopidy.com/en/latest/api/js/).
 
-
 ## Building from source
 
-1. Install [Node.js](https://nodejs.org/) and npm. If you're running Ubuntu:
+1.  Install [Node.js](https://nodejs.org/) and npm. If you're running Ubuntu:
 
         sudo apt-get install nodejs-legacy npm
 
-2. Enter the source directory, and install all dependencies:
+2.  Enter the source directory, and install all dependencies:
 
         npm install
 
@@ -64,8 +60,21 @@ To run other [grunt](https://gruntjs.com/) targets which isn't predefined in
 
     PATH=./node_modules/.bin:$PATH grunt foo
 
-
 ## Changelog
+
+### 1.0.0 (UNRELEASED)
+
+- **Backwards incompatible:** The `Mopidy` class can no longer be instantiated
+  without the `new` keyword.
+
+  Example of how to upgrade existing code:
+
+  ```js
+  // Change from this:
+  const mopidy = Mopidy(...);
+  // To this:
+  const Mopidy = new Mopidy(...);
+  ```
 
 ### 0.5.0 (2015-01-31)
 
