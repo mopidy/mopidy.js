@@ -1,4 +1,3 @@
-const when = require("when");
 const Mopidy = require("../src/mopidy");
 
 const warn = jest.spyOn(global.console, "warn").mockImplementation(() => {});
@@ -192,16 +191,16 @@ describe("._cleanup", () => {
     this.mopidy._cleanup(closeEvent);
 
     expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
-    when
-      .settle([promise1, promise2])
-      .then(descriptors => {
-        expect(descriptors.length).toBe(2);
-        descriptors.forEach(d => {
-          expect(d.state).toBe("rejected");
-          expect(d.reason).toBeInstanceOf(Error);
-          expect(d.reason).toBeInstanceOf(Mopidy.ConnectionError);
-          expect(d.reason.message).toBe("WebSocket closed");
-          expect(d.reason.closeEvent).toBe(closeEvent);
+    Promise.all([
+      promise1.catch(error => error),
+      promise2.catch(error => error),
+    ])
+      .then(errors => {
+        errors.forEach(error => {
+          expect(error).toBeInstanceOf(Error);
+          expect(error).toBeInstanceOf(Mopidy.ConnectionError);
+          expect(error.message).toBe("WebSocket closed");
+          expect(error.closeEvent).toBe(closeEvent);
         });
       })
       .then(done);
@@ -697,7 +696,7 @@ describe("._getApiSpec", () => {
     const methods = {};
     const sendStub = jest
       .spyOn(this.mopidy, "_send")
-      .mockReturnValue(when.resolve(methods));
+      .mockReturnValue(Promise.resolve(methods));
     const createApiStub = jest
       .spyOn(this.mopidy, "_createApi")
       .mockImplementation(() => {});
@@ -908,11 +907,5 @@ describe("._createApi", () => {
         })
         .then(done);
     });
-  });
-});
-
-describe("Reexports", () => {
-  test("Reexports When.js", () => {
-    expect(Mopidy.when()).toEqual(when());
   });
 });

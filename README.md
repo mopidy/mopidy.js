@@ -86,8 +86,13 @@ yarn build
   const Mopidy = new Mopidy(...);
   ```
 
+- **Backwards incompatible:** The `Mopidy` class no longer reexports When.js
+  as `Mopidy.when()`. To upgrade existing code, either migrate to standard
+  ES6 `Promise` or add When.js as a dependency to your project.
+
 - Modernized dependencies:
 
+  - The `Promise` object standardized in ES6 has replaced When.js.
   - `isomorphic-ws` and `ws` has replaced our own wrapper around the browser's
     `WebSocket` API and `faye-websocket` on Node.
 

@@ -40,7 +40,6 @@
   "dependencies": {
     "bane": "~1.1.0",
     "isomorphic-ws": "^4.0.1",
-    "when": "~3.7.2",
     "ws": "^6.1.0"
   },
   "devDependencies": {

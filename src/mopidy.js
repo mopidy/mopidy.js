@@ -1,5 +1,4 @@
 const bane = require("bane");
-const when = require("when");
 const WebSocket = require("isomorphic-ws");
 
 class Mopidy {
@@ -130,13 +129,17 @@ class Mopidy {
   _send(message) {
     switch (this._webSocket.readyState) {
       case Mopidy.WebSocket.CONNECTING:
-        return when.reject(
+        return Promise.reject(
           new Mopidy.ConnectionError("WebSocket is still connecting")
         );
       case Mopidy.WebSocket.CLOSING:
-        return when.reject(new Mopidy.ConnectionError("WebSocket is closing"));
+        return Promise.reject(
+          new Mopidy.ConnectionError("WebSocket is closing")
+        );
       case Mopidy.WebSocket.CLOSED:
-        return when.reject(new Mopidy.ConnectionError("WebSocket is closed"));
+        return Promise.reject(
+          new Mopidy.ConnectionError("WebSocket is closed")
+        );
       default:
     }
     const jsonRpcMessage = {
@@ -144,11 +147,11 @@ class Mopidy {
       jsonrpc: "2.0",
       id: this._nextRequestId(),
     };
-    const deferred = when.defer();
-    this._pendingRequests[jsonRpcMessage.id] = deferred.resolver;
-    this._webSocket.send(JSON.stringify(jsonRpcMessage));
-    this.emit("websocket:outgoingMessage", jsonRpcMessage);
-    return deferred.promise;
+    return new Promise((resolve, reject) => {
+      this._pendingRequests[jsonRpcMessage.id] = { resolve, reject };
+      this._webSocket.send(JSON.stringify(jsonRpcMessage));
+      this.emit("websocket:outgoingMessage", jsonRpcMessage);
+    });
   }
 
   _handleMessage(message) {
@@ -233,14 +236,14 @@ class Mopidy {
         return this._send(message);
       }
       if (args.length > 1) {
-        return when.reject(
+        return Promise.reject(
           new Error(
             "Expected zero arguments, a single array, or a single object."
           )
         );
       }
       if (!Array.isArray(args[0]) && args[0] !== Object(args[0])) {
-        return when.reject(new TypeError("Expected an array or an object."));
+        return Promise.reject(new TypeError("Expected an array or an object."));
       }
       [message.params] = args;
       return this._send(message);
@@ -313,8 +316,6 @@ class ServerError extends Error {
 Mopidy.ServerError = ServerError;
 
 Mopidy.WebSocket = WebSocket;
-
-Mopidy.when = when;
 
 Mopidy.prototype._nextRequestId = (() => {
   let lastUsed = -1;
