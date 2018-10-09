@@ -89,14 +89,6 @@ describe("constructor", () => {
 
     expect(warn).not.toBeCalled();
   });
-
-  test.skip("works without 'new' keyword", () => {
-    const mopidy = Mopidy({
-      callingConvention: "by-position-or-by-name",
-    });
-
-    expect(mopidy).toBeInstanceOf(Mopidy);
-  });
 });
 
 describe(".connect", () => {
