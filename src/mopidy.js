@@ -3,9 +3,6 @@ const WebSocket = require("isomorphic-ws");
 
 class Mopidy {
   constructor(settings) {
-    if (!(this instanceof Mopidy)) {
-      return new Mopidy(settings);
-    }
     this._console = Mopidy._getConsole(settings || {});
     this._settings = this._configure(settings || {});
     this._backoffDelay = this._settings.backoffDelayMin;
