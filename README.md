@@ -90,6 +90,30 @@ yarn build
   as `Mopidy.when()`. To upgrade existing code, either migrate to standard
   ES6 `Promise` or add When.js as a dependency to your project.
 
+- **Backwards incompatible:** The event listening API has changed a bit as
+  Mopidy.js has switched from the unmaintained BANE implementation to Node.js'
+  [`EventEmitter` API](https://nodejs.org/api/events.html).
+
+  The following methods has been removed:
+
+  - `mopidy.on(listener)` --
+    Subscribe to more specific events using `mopidy.on(event, listener)`.
+  - `mopidy.off(listener)` --
+    Unsubscribe from specific events using `mopidy.off(event, listener)`.
+  - `mopidy.off(event)` --
+    Unsubscribe specific listeners using `mopidy.off(event, listener)`.
+  - `mopidy.bind(...)`
+  - `mopidy.errback(listener)`
+
+  The following methods works as before:
+
+  - `mopidy.on(event, listener)`
+  - `mopidy.once(event, listener)`
+  - `mopidy.off(event, listener)` -- Note that Node.js only added
+    this method in Node.js 10.0.0. Consider upgrading Node.js or replacing
+    `mopidy.off()` with `mopidy.removeListener()`.
+  - `mopidy.emit(event, ...)`
+
 - For exploring what events Mopidy.js emits, two new aggregate event types
   has been added:
 
@@ -106,6 +130,8 @@ yarn build
 - Modernized dependencies:
 
   - The `Promise` object standardized in ES6 has replaced When.js.
+  - The `EventEmitter` object from Node.js, with polyfills for the browser,
+    has replaced BANE.
   - `isomorphic-ws` and `ws` has replaced our own wrapper around the browser's
     `WebSocket` API and `faye-websocket` on Node.
 

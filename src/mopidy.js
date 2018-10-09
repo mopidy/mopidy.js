@@ -1,14 +1,14 @@
-const bane = require("bane");
+const EventEmitter = require("events");
 const WebSocket = require("isomorphic-ws");
 
-class Mopidy {
+class Mopidy extends EventEmitter {
   constructor(settings) {
+    super();
     this._console = Mopidy._getConsole(settings || {});
     this._settings = this._configure(settings || {});
     this._backoffDelay = this._settings.backoffDelayMin;
     this._pendingRequests = {};
     this._webSocket = null;
-    bane.createEventEmitter(this);
     this._delegateEvents();
     if (this._settings.autoConnect) {
       this.connect();
@@ -45,11 +45,11 @@ class Mopidy {
 
   _delegateEvents() {
     // Remove existing event handlers
-    this.off("websocket:close");
-    this.off("websocket:error");
-    this.off("websocket:incomingMessage");
-    this.off("websocket:open");
-    this.off("state:offline");
+    this.removeAllListeners("websocket:close");
+    this.removeAllListeners("websocket:error");
+    this.removeAllListeners("websocket:incomingMessage");
+    this.removeAllListeners("websocket:open");
+    this.removeAllListeners("state:offline");
     // Register basic set of event handlers
     this.on("websocket:close", this._cleanup);
     this.on("websocket:error", this._handleWebSocketError);
@@ -120,7 +120,7 @@ class Mopidy {
   }
 
   close() {
-    this.off("state:offline", this._reconnect);
+    this.removeListener("state:offline", this._reconnect);
     this._webSocket.close();
   }
 

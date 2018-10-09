@@ -123,7 +123,6 @@ describe(".connect", () => {
 describe("WebSocket events", () => {
   test("emits 'websocket:close' when connection is closed", () => {
     const spy = jest.fn();
-    this.mopidy.off("websocket:close");
     this.mopidy.on("websocket:close", spy);
 
     const closeEvent = {};
@@ -134,7 +133,6 @@ describe("WebSocket events", () => {
 
   test("emits 'websocket:error' when errors occurs", () => {
     const spy = jest.fn();
-    this.mopidy.off("websocket:error");
     this.mopidy.on("websocket:error", spy);
 
     const errorEvent = {};
@@ -145,7 +143,6 @@ describe("WebSocket events", () => {
 
   test("emits 'websocket:incomingMessage' when a message arrives", () => {
     const spy = jest.fn();
-    this.mopidy.off("websocket:incomingMessage");
     this.mopidy.on("websocket:incomingMessage", spy);
 
     const messageEvent = { data: "this is a message" };
@@ -156,7 +153,6 @@ describe("WebSocket events", () => {
 
   test("emits 'websocket:open' when connection is opened", () => {
     const spy = jest.fn();
-    this.mopidy.off("websocket:open");
     this.mopidy.on("websocket:open", spy);
 
     this.mopidy._webSocket.onopen();
@@ -167,7 +163,7 @@ describe("WebSocket events", () => {
 
 describe("._cleanup", () => {
   beforeEach(() => {
-    this.mopidy.off("state:offline");
+    this.mopidy.removeAllListeners("state:offline");
   });
 
   test("is called on 'websocket:close' event", () => {
@@ -361,7 +357,7 @@ describe("._resetBackoffDelay", () => {
 
 describe("close", () => {
   test("unregisters reconnection hooks", () => {
-    const spy = jest.spyOn(this.mopidy, "off");
+    const spy = jest.spyOn(this.mopidy, "removeListener");
 
     this.mopidy.close();
 
