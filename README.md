@@ -73,6 +73,36 @@ To build updated JavaScript files for browser use in `dist/`, run:
 yarn build
 ```
 
+## Demo application
+
+![Web demo](examples/web.png)
+
+In the `examples/` directory of the Git repo, you can find a small demo web
+application using Mopidy.js. The left half of the screen shows what's
+currently playing and provides some basic playback controls. The right half of
+the screen shows the JSON-RPC messages and events that are sent back and forth
+to the server, hopefully giving some insight into what is available to
+Mopidy.js developers.
+
+To run the demo application yourself:
+
+1. Make sure the `http/allowed_origins` config value in your `mopidy.conf`
+   includes `localhost:1234`.
+
+2. Run Mopidy on your local machine, so that Mopidy's web interface becomes
+   available at http://localhost:6680/.
+
+3. Clone Mopidy.js from GitHub.
+
+4. Run `yarn` to install dependencies.
+
+5. Run `yarn start` to run the demo application at http://localhost:1234/.
+
+This setup uses hot module reloading, so any changes you do to the demo
+application files, `examples/web.{html,js}`, will instantly be visible in
+your browser. Thus, this can serve as a nice playing ground to get to know
+the capabilities of Mopidy and Mopidy.js.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).

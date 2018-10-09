@@ -35,7 +35,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "parcel build mopidy.js"
+    "build": "parcel build mopidy.js",
+    "start": "parcel examples/web.html"
   },
   "dependencies": {
     "isomorphic-ws": "^4.0.1",
