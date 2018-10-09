@@ -93,14 +93,19 @@ class Mopidy {
       error.closeEvent = closeEvent;
       resolver.reject(error);
     });
+    this.emit("state", "state:offline");
     this.emit("state:offline");
   }
 
   _reconnect() {
+    this.emit("state", "reconnectionPending", {
+      timeToAttempt: this._backoffDelay,
+    });
     this.emit("reconnectionPending", {
       timeToAttempt: this._backoffDelay,
     });
     setTimeout(() => {
+      this.emit("state", "reconnecting");
       this.emit("reconnecting");
       this.connect();
     }, this._backoffDelay);
@@ -207,10 +212,11 @@ class Mopidy {
   }
 
   _handleEvent(eventMessage) {
-    const type = eventMessage.event;
-    const data = eventMessage;
+    const data = { ...eventMessage };
     delete data.event;
-    this.emit(`event:${Mopidy._snakeToCamel(type)}`, data);
+    const eventName = `event:${Mopidy._snakeToCamel(eventMessage.event)}`;
+    this.emit("event", eventName, data);
+    this.emit(eventName, data);
   }
 
   _getApiSpec() {
@@ -275,6 +281,7 @@ class Mopidy {
 
     Object.keys(methods).forEach(createMethod);
 
+    this.emit("state", "state:online");
     this.emit("state:online");
   }
 

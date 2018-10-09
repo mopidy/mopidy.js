@@ -206,6 +206,15 @@ describe("._cleanup", () => {
       .then(done);
   });
 
+  test("emits 'state' event when done", () => {
+    const spy = jest.fn();
+    this.mopidy.on("state", spy);
+
+    this.mopidy._cleanup({});
+
+    expect(spy).toBeCalledWith("state:offline");
+  });
+
   test("emits 'state:offline' event when done", () => {
     const spy = jest.fn();
     this.mopidy.on("state:offline", spy);
@@ -232,6 +241,8 @@ describe("._reconnect", () => {
     const connectStub = jest
       .spyOn(this.mopidy, "connect")
       .mockImplementation(() => {});
+    const stateSpy = jest.fn();
+    this.mopidy.on("state", stateSpy);
     const pendingSpy = jest.fn();
     this.mopidy.on("reconnectionPending", pendingSpy);
     const reconnectingSpy = jest.fn();
@@ -240,16 +251,24 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(0);
 
     this.mopidy._reconnect();
+    expect(stateSpy).toBeCalledWith("reconnectionPending", {
+      timeToAttempt: 1000,
+    });
     expect(pendingSpy).toBeCalledWith({ timeToAttempt: 1000 });
     jest.advanceTimersByTime(0);
     expect(connectStub).toBeCalledTimes(0);
     jest.advanceTimersByTime(1000);
     expect(connectStub).toBeCalledTimes(1);
+    expect(stateSpy).toBeCalledWith("reconnecting");
     expect(reconnectingSpy).toBeCalledWith();
 
+    stateSpy.mockClear();
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
     this.mopidy._reconnect();
+    expect(stateSpy).toBeCalledWith("reconnectionPending", {
+      timeToAttempt: 2000,
+    });
     expect(pendingSpy).toBeCalledWith({ timeToAttempt: 2000 });
     expect(connectStub).toBeCalledTimes(1);
     jest.advanceTimersByTime(0);
@@ -258,11 +277,16 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(1);
     jest.advanceTimersByTime(1000);
     expect(connectStub).toBeCalledTimes(2);
+    expect(stateSpy).toBeCalledWith("reconnecting");
     expect(reconnectingSpy).toBeCalledWith();
 
+    stateSpy.mockClear();
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
     this.mopidy._reconnect();
+    expect(stateSpy).toBeCalledWith("reconnectionPending", {
+      timeToAttempt: 4000,
+    });
     expect(pendingSpy).toBeCalledWith({ timeToAttempt: 4000 });
     expect(connectStub).toBeCalledTimes(2);
     jest.advanceTimersByTime(0);
@@ -271,6 +295,7 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(2);
     jest.advanceTimersByTime(2000);
     expect(connectStub).toBeCalledTimes(3);
+    expect(stateSpy).toBeCalledWith("reconnecting");
     expect(reconnectingSpy).toBeCalledWith();
   });
 
@@ -280,6 +305,8 @@ describe("._reconnect", () => {
     const connectStub = jest
       .spyOn(this.mopidy, "connect")
       .mockImplementation(() => {});
+    const stateSpy = jest.fn();
+    this.mopidy.on("state", stateSpy);
     const pendingSpy = jest.fn();
     this.mopidy.on("reconnectionPending", pendingSpy);
     this.mopidy._backoffDelay = this.mopidy._settings.backoffDelayMax;
@@ -287,14 +314,21 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(0);
 
     this.mopidy._reconnect();
+    expect(stateSpy).toBeCalledWith("reconnectionPending", {
+      timeToAttempt: 64000,
+    });
     expect(pendingSpy).toBeCalledWith({ timeToAttempt: 64000 });
     jest.advanceTimersByTime(0);
     expect(connectStub).toBeCalledTimes(0);
     jest.advanceTimersByTime(64000);
     expect(connectStub).toBeCalledTimes(1);
 
+    stateSpy.mockClear();
     pendingSpy.mockClear();
     this.mopidy._reconnect();
+    expect(stateSpy).toBeCalledWith("reconnectionPending", {
+      timeToAttempt: 64000,
+    });
     expect(pendingSpy).toBeCalledWith({ timeToAttempt: 64000 });
     expect(connectStub).toBeCalledTimes(1);
     jest.advanceTimersByTime(0);
@@ -667,9 +701,9 @@ describe("._handleResponse", () => {
 });
 
 describe("._handleEvent", () => {
-  test("emits server side even on Mopidy object", () => {
+  test("emits all server side events on 'event' event", () => {
     const spy = jest.fn();
-    this.mopidy.on(spy);
+    this.mopidy.on("event", spy);
     const track = {};
     const message = {
       event: "track_playback_started",
@@ -679,6 +713,20 @@ describe("._handleEvent", () => {
     this.mopidy._handleEvent(message);
 
     expect(spy).toBeCalledWith("event:trackPlaybackStarted", { track });
+  });
+
+  test("emits server side events on 'event:*' events", () => {
+    const spy = jest.fn();
+    this.mopidy.on("event:trackPlaybackStarted", spy);
+    const track = {};
+    const message = {
+      event: "track_playback_started",
+      track,
+    };
+
+    this.mopidy._handleEvent(message);
+
+    expect(spy).toBeCalledWith({ track });
   });
 });
 
@@ -776,6 +824,15 @@ describe("._createApi", () => {
 
     expect(this.mopidy.mightyGreetings).toBeDefined();
     expect(typeof this.mopidy.mightyGreetings.helloWorld).toBe("function");
+  });
+
+  test("triggers 'state' event when API is ready for use", () => {
+    const spy = jest.fn();
+    this.mopidy.on("state", spy);
+
+    this.mopidy._createApi({});
+
+    expect(spy).toBeCalledWith("state:online");
   });
 
   test("triggers 'state:online' event when API is ready for use", () => {

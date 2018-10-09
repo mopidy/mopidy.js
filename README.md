@@ -90,6 +90,19 @@ yarn build
   as `Mopidy.when()`. To upgrade existing code, either migrate to standard
   ES6 `Promise` or add When.js as a dependency to your project.
 
+- For exploring what events Mopidy.js emits, two new aggregate event types
+  has been added:
+
+  - `state`: This event emits online/offline/reconnection events,
+    like `state:online`.
+  - `event`: This event emits server side events from Mopidy,
+    like `event:trackPlaybackStarted`.
+
+  Listeners to the aggregate events get arguments on the form
+  `(eventName, data)`, where `eventName` is the name of the more specific
+  event. It is recommended that applications do not use these aggregates, but
+  instead subscribe to more specific events.
+
 - Modernized dependencies:
 
   - The `Promise` object standardized in ES6 has replaced When.js.
