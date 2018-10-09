@@ -86,6 +86,11 @@ yarn build
   const Mopidy = new Mopidy(...);
   ```
 
+- Modernized dependencies:
+
+  - `isomorphic-ws` and `ws` has replaced our own wrapper around the browser's
+    `WebSocket` API and `faye-websocket` on Node.
+
 - Modernized development stack:
 
   - Testing: Jest has replaced Buster.JS and Sinon.

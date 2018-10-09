@@ -39,8 +39,9 @@
   },
   "dependencies": {
     "bane": "~1.1.0",
-    "faye-websocket": "~0.9.2",
-    "when": "~3.7.2"
+    "isomorphic-ws": "^4.0.1",
+    "when": "~3.7.2",
+    "ws": "^6.1.0"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^13.1.0",

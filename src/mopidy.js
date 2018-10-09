@@ -1,6 +1,6 @@
 const bane = require("bane");
 const when = require("when");
-const websocket = require("../lib/websocket/");
+const WebSocket = require("isomorphic-ws");
 
 class Mopidy {
   constructor(settings) {
@@ -312,7 +312,7 @@ class ServerError extends Error {
 }
 Mopidy.ServerError = ServerError;
 
-Mopidy.WebSocket = websocket.Client;
+Mopidy.WebSocket = WebSocket;
 
 Mopidy.when = when;
 
