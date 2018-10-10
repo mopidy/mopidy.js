@@ -151,17 +151,17 @@ class Mopidy extends EventEmitter {
           new Mopidy.ConnectionError("WebSocket is closed")
         );
       default:
+        return new Promise((resolve, reject) => {
+          const jsonRpcMessage = {
+            ...message,
+            jsonrpc: "2.0",
+            id: this._nextRequestId(),
+          };
+          this._pendingRequests[jsonRpcMessage.id] = { resolve, reject };
+          this._webSocket.send(JSON.stringify(jsonRpcMessage));
+          this.emit("websocket:outgoingMessage", jsonRpcMessage);
+        });
     }
-    const jsonRpcMessage = {
-      ...message,
-      jsonrpc: "2.0",
-      id: this._nextRequestId(),
-    };
-    return new Promise((resolve, reject) => {
-      this._pendingRequests[jsonRpcMessage.id] = { resolve, reject };
-      this._webSocket.send(JSON.stringify(jsonRpcMessage));
-      this.emit("websocket:outgoingMessage", jsonRpcMessage);
-    });
   }
 
   _handleMessage(message) {
