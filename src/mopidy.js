@@ -197,19 +197,18 @@ class Mopidy extends EventEmitter {
       );
       return;
     }
-    let error;
     const { resolve, reject } = this._pendingRequests[responseMessage.id];
     delete this._pendingRequests[responseMessage.id];
     if (Object.hasOwnProperty.call(responseMessage, "result")) {
       resolve(responseMessage.result);
     } else if (Object.hasOwnProperty.call(responseMessage, "error")) {
-      error = new Mopidy.ServerError(responseMessage.error.message);
+      const error = new Mopidy.ServerError(responseMessage.error.message);
       error.code = responseMessage.error.code;
       error.data = responseMessage.error.data;
       reject(error);
       this._console.warn("Server returned error:", responseMessage.error);
     } else {
-      error = new Error("Response without 'result' or 'error' received");
+      const error = new Error("Response without 'result' or 'error' received");
       error.data = { response: responseMessage };
       reject(error);
       this._console.warn(
