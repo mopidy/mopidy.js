@@ -5,7 +5,7 @@ class Mopidy extends EventEmitter {
   constructor(settings) {
     super();
     this._console = Mopidy._getConsole(settings || {});
-    this._settings = this._configure(settings || {});
+    this._settings = Mopidy._configure(settings || {});
     this._backoffDelay = this._settings.backoffDelayMin;
     this._pendingRequests = {};
     this._webSocket = null;
@@ -15,7 +15,7 @@ class Mopidy extends EventEmitter {
     }
   }
 
-  _configure(settings) {
+  static _configure(settings) {
     const newSettings = { ...settings };
     const protocol =
       typeof document !== "undefined" && document.location.protocol === "https:"
@@ -31,15 +31,6 @@ class Mopidy extends EventEmitter {
     }
     newSettings.backoffDelayMin = settings.backoffDelayMin || 1000;
     newSettings.backoffDelayMax = settings.backoffDelayMax || 64000;
-    if (typeof settings.callingConvention === "undefined") {
-      this._console.warn(
-        "Mopidy.js is using the default calling convention. The " +
-          "default will change in the future. You should explicitly " +
-          "specify which calling convention you use."
-      );
-    }
-    newSettings.callingConvention =
-      settings.callingConvention || "by-position-only";
     return newSettings;
   }
 
@@ -226,16 +217,9 @@ class Mopidy extends EventEmitter {
   }
 
   _createApi(methods) {
-    const byPositionOrByName =
-      this._settings.callingConvention === "by-position-or-by-name";
-
     const caller = method => (...args) => {
       const message = { method };
       if (args.length === 0) {
-        return this._send(message);
-      }
-      if (!byPositionOrByName) {
-        message.params = Array.prototype.slice.call(args);
         return this._send(message);
       }
       if (args.length > 1) {

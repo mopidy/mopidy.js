@@ -77,7 +77,7 @@ yarn build
 - **Backwards incompatible:** The `Mopidy` class can no longer be instantiated
   without the `new` keyword.
 
-  Example of how to upgrade existing code:
+  To upgrade existing code:
 
   ```js
   // Change from this:
@@ -85,6 +85,53 @@ yarn build
   // To this:
   const Mopidy = new Mopidy(...);
   ```
+
+- **Backwards incompatible:** The API methods no longer support two different
+  calling conventions.
+
+  To upgrade code using `by-position-or-by-name`, simply remove
+  `callingConvention` from the settings object:
+
+  ```js
+  // Change from this:
+  const mopidy = new Mopidy({ callingConvention: "by-position-or-by-name" });
+  // To this:
+  const mopidy = new Mopidy();
+  ```
+
+  To upgrade code using the long deprecated, but still default, calling
+  convention `by-position-only`, multiple steps is required.
+
+  1.  The first step is to remove `callingConvention` from the settings object:
+
+      ```js
+      // Change from this:
+      const mopidy = new Mopidy({ callingConvention: "by-position-only" });
+      // To this:
+      const mopidy = new Mopidy();
+      ```
+
+  2.  The second step is to update all API method calls to explicitly use
+      positional arguments:
+
+      ```js
+      // Change from this:
+      mopidy.tracklist.setRepeat(true);
+      // To this:
+      mopidy.tracklist.setRepeat([true]);
+      ```
+
+      At this point, the application should work again.
+
+  3.  The final, and optional step, is to change API method calls to using objects
+      instead of arrays where that makes the code clearer:
+
+      ```js
+      // Optionally change from this:
+      mopidy.library.search(["abba", null, true]);
+      // To this:
+      mopidy.library.search({ query: "abba", exact: true });
+      ```
 
 - **Backwards incompatible:** The `Mopidy` class no longer reexports When.js
   as `Mopidy.when()`. To upgrade existing code, either migrate to standard

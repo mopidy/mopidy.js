@@ -26,7 +26,6 @@ beforeEach(() => {
   this.openWebSocket.readyState = WebSocketMock.OPEN;
   WebSocketMock.mockClear();
   this.mopidy = new Mopidy({
-    callingConvention: "by-position-or-by-name",
     webSocket: this.openWebSocket,
   });
 
@@ -38,7 +37,6 @@ describe("constructor", () => {
   test("connects when autoConnect is true", () => {
     new Mopidy({
       autoConnect: true,
-      callingConvention: "by-position-or-by-name",
     });
 
     const currentHost =
@@ -53,7 +51,6 @@ describe("constructor", () => {
   test("does not connect when autoConnect is false", () => {
     new Mopidy({
       autoConnect: false,
-      callingConvention: "by-position-or-by-name",
     });
 
     expect(Mopidy.WebSocket).not.toBeCalled();
@@ -61,35 +58,10 @@ describe("constructor", () => {
 
   test("does not connect when passed a WebSocket", () => {
     new Mopidy({
-      callingConvention: "by-position-or-by-name",
       webSocket: {},
     });
 
     expect(Mopidy.WebSocket).not.toBeCalled();
-  });
-
-  test("defaults to by-position-only calling convention", () => {
-    const mopidy = new Mopidy();
-
-    expect(mopidy._settings.callingConvention).toBe("by-position-only");
-  });
-
-  test("warns if no calling convention explicitly selected", () => {
-    new Mopidy();
-
-    expect(warn).toHaveBeenCalledWith(
-      "Mopidy.js is using the default calling convention. The " +
-        "default will change in the future. You should explicitly " +
-        "specify which calling convention you use."
-    );
-  });
-
-  test("does not warn if calling convention explicitly selected", () => {
-    new Mopidy({
-      callingConvention: "by-position-or-by-name",
-    });
-
-    expect(warn).not.toBeCalled();
   });
 });
 
@@ -97,7 +69,6 @@ describe(".connect", () => {
   test("connects when autoConnect is false", () => {
     const mopidy = new Mopidy({
       autoConnect: false,
-      callingConvention: "by-position-or-by-name",
     });
     expect(Mopidy.WebSocket).not.toBeCalled();
 
@@ -358,7 +329,7 @@ describe("._resetBackoffDelay", () => {
   });
 });
 
-describe("close", () => {
+describe(".close", () => {
   test("unregisters reconnection hooks", () => {
     const spy = jest.spyOn(this.mopidy, "removeListener");
 
@@ -842,126 +813,87 @@ describe("._createApi", () => {
 
     expect(spy).toBeCalledWith();
   });
+});
 
-  describe("by-position-only calling convention", () => {
-    beforeEach(() => {
-      this.mopidy = new Mopidy({
-        webSocket: this.openWebSocket,
-        callingConvention: "by-position-only",
-      });
-      this.mopidy._createApi({
-        foo: {
-          params: ["bar", "baz"],
-        },
-      });
-      this.sendStub = jest
-        .spyOn(this.mopidy, "_send")
-        .mockImplementation(() => {});
+describe("API method calls", () => {
+  beforeEach(() => {
+    this.mopidy = new Mopidy({
+      webSocket: this.openWebSocket,
     });
-
-    test("sends no params if no arguments passed to function", () => {
-      this.mopidy.foo();
-
-      expect(this.sendStub).toBeCalledWith({ method: "foo" });
+    this.mopidy._createApi({
+      foo: {
+        params: ["bar", "baz"],
+      },
     });
+    this.sendStub = jest
+      .spyOn(this.mopidy, "_send")
+      .mockImplementation(() => {});
+  });
 
-    test("sends messages with function arguments unchanged", () => {
-      this.mopidy.foo(31, 97);
+  test("sends no params if no arguments passed to function", () => {
+    this.mopidy.foo();
 
-      expect(this.sendStub).toBeCalledWith({
-        method: "foo",
-        params: [31, 97],
-      });
+    expect(this.sendStub).toBeCalledWith({ method: "foo" });
+  });
+
+  test("sends by-position if argument is a list", () => {
+    this.mopidy.foo([31, 97]);
+
+    expect(this.sendStub).toBeCalledWith({
+      method: "foo",
+      params: [31, 97],
     });
   });
 
-  describe("by-position-or-by-name calling convention", () => {
-    beforeEach(() => {
-      this.mopidy = new Mopidy({
-        webSocket: this.openWebSocket,
-        callingConvention: "by-position-or-by-name",
-      });
-      this.mopidy._createApi({
-        foo: {
-          params: ["bar", "baz"],
-        },
-      });
-      this.sendStub = jest
-        .spyOn(this.mopidy, "_send")
-        .mockImplementation(() => {});
+  test("sends by-name if argument is an object", () => {
+    this.mopidy.foo({ bar: 31, baz: 97 });
+
+    expect(this.sendStub).toBeCalledWith({
+      method: "foo",
+      params: { bar: 31, baz: 97 },
     });
+  });
 
-    test("must be turned on manually", () => {
-      expect(this.mopidy._settings.callingConvention).toBe(
-        "by-position-or-by-name"
-      );
-    });
+  test("rejects with error if more than one argument", done => {
+    const promise = this.mopidy.foo([1, 2], { c: 3, d: 4 });
 
-    test("sends no params if no arguments passed to function", () => {
-      this.mopidy.foo();
+    expect.hasAssertions();
+    promise
+      .catch(error => {
+        expect(this.sendStub).toBeCalledTimes(0);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toBe(
+          "Expected zero arguments, a single array, or a single object."
+        );
+      })
+      .then(done);
+  });
 
-      expect(this.sendStub).toBeCalledWith({ method: "foo" });
-    });
+  test("rejects with error if string", done => {
+    const promise = this.mopidy.foo("hello");
 
-    test("sends by-position if argument is a list", () => {
-      this.mopidy.foo([31, 97]);
+    expect.hasAssertions();
+    promise
+      .catch(error => {
+        expect(this.sendStub).toBeCalledTimes(0);
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(TypeError);
+        expect(error.message).toBe("Expected an array or an object.");
+      })
+      .then(done);
+  });
 
-      expect(this.sendStub).toBeCalledWith({
-        method: "foo",
-        params: [31, 97],
-      });
-    });
+  test("rejects with error if number", done => {
+    const promise = this.mopidy.foo(1337);
 
-    test("sends by-name if argument is an object", () => {
-      this.mopidy.foo({ bar: 31, baz: 97 });
-
-      expect(this.sendStub).toBeCalledWith({
-        method: "foo",
-        params: { bar: 31, baz: 97 },
-      });
-    });
-
-    test("rejects with error if more than one argument", done => {
-      const promise = this.mopidy.foo([1, 2], { c: 3, d: 4 });
-
-      expect.hasAssertions();
-      promise
-        .catch(error => {
-          expect(this.sendStub).toBeCalledTimes(0);
-          expect(error).toBeInstanceOf(Error);
-          expect(error.message).toBe(
-            "Expected zero arguments, a single array, or a single object."
-          );
-        })
-        .then(done);
-    });
-
-    test("rejects with error if string", done => {
-      const promise = this.mopidy.foo("hello");
-
-      expect.hasAssertions();
-      promise
-        .catch(error => {
-          expect(this.sendStub).toBeCalledTimes(0);
-          expect(error).toBeInstanceOf(Error);
-          expect(error).toBeInstanceOf(TypeError);
-          expect(error.message).toBe("Expected an array or an object.");
-        })
-        .then(done);
-    });
-
-    test("rejects with error if number", done => {
-      const promise = this.mopidy.foo(1337);
-
-      expect.hasAssertions();
-      promise
-        .catch(error => {
-          expect(this.sendStub).toBeCalledTimes(0);
-          expect(error).toBeInstanceOf(Error);
-          expect(error).toBeInstanceOf(TypeError);
-          expect(error.message).toBe("Expected an array or an object.");
-        })
-        .then(done);
-    });
+    expect.hasAssertions();
+    promise
+      .catch(error => {
+        expect(this.sendStub).toBeCalledTimes(0);
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(TypeError);
+        expect(error.message).toBe("Expected an array or an object.");
+      })
+      .then(done);
   });
 });
