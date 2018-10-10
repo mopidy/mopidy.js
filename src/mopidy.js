@@ -95,11 +95,11 @@ class Mopidy extends EventEmitter {
 
   _cleanup(closeEvent) {
     Object.keys(this._pendingRequests).forEach(requestId => {
-      const resolver = this._pendingRequests[requestId];
+      const { reject } = this._pendingRequests[requestId];
       delete this._pendingRequests[requestId];
       const error = new Mopidy.ConnectionError("WebSocket closed");
       error.closeEvent = closeEvent;
-      resolver.reject(error);
+      reject(error);
     });
     this.emit("state", "state:offline");
     this.emit("state:offline");
@@ -198,20 +198,20 @@ class Mopidy extends EventEmitter {
       return;
     }
     let error;
-    const resolver = this._pendingRequests[responseMessage.id];
+    const { resolve, reject } = this._pendingRequests[responseMessage.id];
     delete this._pendingRequests[responseMessage.id];
     if (Object.hasOwnProperty.call(responseMessage, "result")) {
-      resolver.resolve(responseMessage.result);
+      resolve(responseMessage.result);
     } else if (Object.hasOwnProperty.call(responseMessage, "error")) {
       error = new Mopidy.ServerError(responseMessage.error.message);
       error.code = responseMessage.error.code;
       error.data = responseMessage.error.data;
-      resolver.reject(error);
+      reject(error);
       this._console.warn("Server returned error:", responseMessage.error);
     } else {
       error = new Error("Response without 'result' or 'error' received");
       error.data = { response: responseMessage };
-      resolver.reject(error);
+      reject(error);
       this._console.warn(
         "Response without 'result' or 'error' received. Message was:",
         responseMessage
