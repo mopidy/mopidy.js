@@ -4,14 +4,17 @@
 [![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
 [![Build Status](https://img.shields.io/travis/mopidy/mopidy.js.svg?style=flat)](https://travis-ci.org/mopidy/mopidy.js)
 
-Mopidy.js is a JavaScript library that is installed as a part of Mopidy's HTTP
-frontend or from npm. The library makes Mopidy's core API available from the
-browser or a Node.js environment, using JSON-RPC messages over a WebSocket to
-communicate with Mopidy.
+Mopidy.js is a JavaScript library for controlling a Mopidy music server over a
+WebSocket from the browser or from Node.js.
+
+The library makes Mopidy's core API available from the browser and Node.js
+programs, using JSON-RPC messages over a WebSocket to communicate with Mopidy.
+
+This is the foundation of Mopidy web clients.
 
 ## Getting it for browser use
 
-Regular and minified versions of Mopidy.js, ready for use, is available from
+A minified versions of Mopidy.js, complete with sourcemap, is available from
 the project's
 [GitHub release page](https://github.com/mopidy/mopidy.js/releases).
 
