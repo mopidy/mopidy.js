@@ -1,11 +1,17 @@
 const EventEmitter = require("events");
 const WebSocket = require("isomorphic-ws");
 
+function snakeToCamel(name) {
+  return name.replace(/(_[a-z])/g, match =>
+    match.toUpperCase().replace("_", "")
+  );
+}
+
 class Mopidy extends EventEmitter {
   constructor(settings) {
     super();
-    this._console = Mopidy._getConsole(settings || {});
-    this._settings = Mopidy._configure(settings || {});
+    this._console = this._getConsole(settings || {});
+    this._settings = this._configure(settings || {});
     this._backoffDelay = this._settings.backoffDelayMin;
     this._pendingRequests = {};
     this._webSocket = null;
@@ -15,7 +21,18 @@ class Mopidy extends EventEmitter {
     }
   }
 
-  static _configure(settings) {
+  _getConsole(settings) {
+    if (typeof settings.console !== "undefined") {
+      return settings.console;
+    }
+    const con = (typeof console !== "undefined" && console) || {};
+    con.log = con.log || (() => {});
+    con.warn = con.warn || (() => {});
+    con.error = con.error || (() => {});
+    return con;
+  }
+
+  _configure(settings) {
     const newSettings = { ...settings };
     const protocol =
       typeof document !== "undefined" && document.location.protocol === "https:"
@@ -205,7 +222,7 @@ class Mopidy extends EventEmitter {
   _handleEvent(eventMessage) {
     const data = { ...eventMessage };
     delete data.event;
-    const eventName = `event:${Mopidy._snakeToCamel(eventMessage.event)}`;
+    const eventName = `event:${snakeToCamel(eventMessage.event)}`;
     this.emit("event", eventName, data);
     this.emit(eventName, data);
   }
@@ -247,7 +264,7 @@ class Mopidy extends EventEmitter {
     const createObjects = objPath => {
       let parentObj = this;
       objPath.forEach(objName => {
-        const camelObjName = Mopidy._snakeToCamel(objName);
+        const camelObjName = snakeToCamel(objName);
         parentObj[camelObjName] = parentObj[camelObjName] || {};
         parentObj = parentObj[camelObjName];
       });
@@ -256,7 +273,7 @@ class Mopidy extends EventEmitter {
 
     const createMethod = fullMethodName => {
       const methodPath = getPath(fullMethodName);
-      const methodName = Mopidy._snakeToCamel(methodPath.slice(-1)[0]);
+      const methodName = snakeToCamel(methodPath.slice(-1)[0]);
       const object = createObjects(methodPath.slice(0, -1));
       object[methodName] = caller(fullMethodName);
       object[methodName].description = methods[fullMethodName].description;
@@ -267,23 +284,6 @@ class Mopidy extends EventEmitter {
 
     this.emit("state", "state:online");
     this.emit("state:online");
-  }
-
-  static _getConsole(settings) {
-    if (typeof settings.console !== "undefined") {
-      return settings.console;
-    }
-    const con = (typeof console !== "undefined" && console) || {};
-    con.log = con.log || (() => {});
-    con.warn = con.warn || (() => {});
-    con.error = con.error || (() => {});
-    return con;
-  }
-
-  static _snakeToCamel(name) {
-    return name.replace(/(_[a-z])/g, match =>
-      match.toUpperCase().replace("_", "")
-    );
   }
 }
 
