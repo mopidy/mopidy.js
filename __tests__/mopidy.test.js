@@ -1,3 +1,6 @@
+/* eslint no-new:off */
+/* eslint-env jest */
+
 const Mopidy = require("../src/mopidy");
 
 const warn = jest.spyOn(global.console, "warn").mockImplementation(() => {});
