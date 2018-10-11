@@ -28,14 +28,14 @@
       "email": "paul.connolley@gmail.com"
     }
   ],
-  "main": "src/mopidy.js",
+  "main": "mopidy.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mopidy/mopidy.js.git"
   },
   "scripts": {
     "test": "jest",
-    "build": "parcel build src/mopidy.js"
+    "build": "parcel build mopidy.js"
   },
   "dependencies": {
     "isomorphic-ws": "^4.0.1",
