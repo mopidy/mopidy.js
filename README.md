@@ -105,7 +105,7 @@ the capabilities of Mopidy and Mopidy.js.
 
 ## Demo console application
 
-In the `examples/` directory of the Gir repo, you can find `mpc.js`, a partial
+In the `examples/` directory of the Git repo, you can find `mpc.js`, a partial
 clone of the `mpc` utility built using Mopidy.js on Node.
 
 Output from the original command:
