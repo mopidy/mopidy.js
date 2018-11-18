@@ -15,7 +15,7 @@
   ```
 
 - **Backwards incompatible:** The API methods no longer support two different
-  calling conventions.
+  calling conventions. (Fixes: #10)
 
   To upgrade code using `by-position-or-by-name`, simply remove
   `callingConvention` from the settings object:
@@ -104,15 +104,15 @@
 
 - Modernized dependencies:
 
-  - The `Promise` object standardized in ES6 has replaced When.js.
+  - The `Promise` object standardized in ES6 has replaced When.js. (Fixes: #11)
   - The `EventEmitter` object from Node.js, with polyfills for the browser,
-    has replaced BANE.
+    has replaced BANE. (Fixes: #12)
   - `isomorphic-ws` and `ws` has replaced our own wrapper around the browser's
     `WebSocket` API and `faye-websocket` on Node.
 
 - Modernized development stack:
 
-  - Testing: Jest has replaced Buster.JS and Sinon.
+  - Testing: Jest has replaced Buster.JS and Sinon. (Fixes: #13)
   - Linting: ESLint has replaced JSHint.
   - Building: Parcel has replaced Browserify and Uglify.
   - Tasks: npm scripts has replaced Grunt.
