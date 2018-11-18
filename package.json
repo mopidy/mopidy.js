@@ -12,22 +12,6 @@
   "homepage": "http://www.mopidy.com/",
   "bugs": "https://github.com/mopidy/mopidy.js/issues",
   "license": "Apache-2.0",
-  "author": {
-    "name": "Stein Magnus Jodal",
-    "email": "stein.magnus@jodal.no",
-    "url": "http://www.jodal.no"
-  },
-  "contributors": [
-    {
-      "name": "Stein Magnus Jodal",
-      "email": "stein.magnus@jodal.no",
-      "url": "http://www.jodal.no"
-    },
-    {
-      "name": "Paul Connolley",
-      "email": "paul.connolley@gmail.com"
-    }
-  ],
   "main": "src/mopidy.js",
   "repository": {
     "type": "git",
