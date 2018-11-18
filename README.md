@@ -126,6 +126,9 @@ Jon Hopkins - C O S M
 volume:100%   repeat: off   random: on    single: off   consume: off
 ```
 
+To run this example yourself, follow step 1-4 for the demo web application, and
+then run `./examples/mpc.js`.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).
