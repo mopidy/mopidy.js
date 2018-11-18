@@ -343,6 +343,12 @@ describe(".close", () => {
 
     expect(this.mopidy._webSocket.close).toBeCalledWith();
   });
+
+  test("close without an open WebSocket does not fail", () => {
+    const mopidy = new Mopidy({ autoConnect: false });
+
+    mopidy.close(); // No error thrown
+  });
 });
 
 describe("._handleWebSocketError", () => {

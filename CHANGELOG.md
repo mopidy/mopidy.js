@@ -102,6 +102,10 @@
   event. It is recommended that applications do not use these aggregates, but
   instead subscribe to more specific events.
 
+- Fixed `TypeError` when calling `mopidy.close()` when no WebSocket connection
+  exists, for example when using `new Mopidy({ autoConnect: false })`.
+  (Fixes: #15)
+
 - Modernized dependencies:
 
   - The `Promise` object standardized in ES6 has replaced When.js. (Fixes: #11)

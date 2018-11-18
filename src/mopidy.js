@@ -129,7 +129,9 @@ class Mopidy extends EventEmitter {
 
   close() {
     this.removeListener("state:offline", this._reconnect);
-    this._webSocket.close();
+    if (this._webSocket) {
+      this._webSocket.close();
+    }
   }
 
   _handleWebSocketError(error) {
