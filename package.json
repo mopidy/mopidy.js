@@ -37,6 +37,6 @@
     "prettier": "^1.14.3"
   },
   "engines": {
-    "node": "*"
+    "node": ">= 8"
   }
 }
