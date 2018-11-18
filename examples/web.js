@@ -112,12 +112,10 @@ mopidy.on("state:online", () => {
   el("previous").onclick = () => mopidy.playback.previous();
   el("next").onclick = () => mopidy.playback.next();
 
-  el("repeat").onclick = e =>
-    mopidy.tracklist.getRepeat().then(state =>
-      mopidy.tracklist.setRepeat([!state]).then(() => {
-        e.className = "active";
-      })
-    );
+  el("repeat").onclick = () =>
+    mopidy.tracklist
+      .getRepeat()
+      .then(state => mopidy.tracklist.setRepeat([!state]));
   el("random").onclick = () =>
     mopidy.tracklist
       .getRandom()
@@ -125,9 +123,7 @@ mopidy.on("state:online", () => {
   el("single").onclick = () =>
     mopidy.tracklist
       .getSingle()
-      .then(state => mopidy.tracklist.setSingle([!state]))
-      .catch(console.error)
-      .done();
+      .then(state => mopidy.tracklist.setSingle([!state]));
   el("consume").onclick = () =>
     mopidy.tracklist
       .getConsume()
@@ -156,6 +152,21 @@ mopidy.on("event:trackPlaybackPaused", ({ time_position }) => {
 });
 
 mopidy.on("event:trackPlaybackResumed", () => {});
+
+mopidy.on("event:optionsChanged", () => {
+  mopidy.tracklist
+    .getRepeat()
+    .then(state => el("repeat").classList.toggle("active", state));
+  mopidy.tracklist
+    .getRandom()
+    .then(state => el("random").classList.toggle("active", state));
+  mopidy.tracklist
+    .getSingle()
+    .then(state => el("single").classList.toggle("active", state));
+  mopidy.tracklist
+    .getConsume()
+    .then(state => el("consume").classList.toggle("active", state));
+});
 
 window.onload = () => {
   el("host").innerText = document.location.host;
