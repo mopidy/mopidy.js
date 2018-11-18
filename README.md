@@ -73,7 +73,7 @@ To build updated JavaScript files for browser use in `dist/`, run:
 yarn build
 ```
 
-## Demo application
+## Demo web application
 
 ![Web demo](examples/web.png)
 
@@ -102,6 +102,29 @@ This setup uses hot module reloading, so any changes you do to the demo
 application files, `examples/web.{html,js}`, will instantly be visible in
 your browser. Thus, this can serve as a nice playing ground to get to know
 the capabilities of Mopidy and Mopidy.js.
+
+## Demo console application
+
+In the `examples/` directory of the Gir repo, you can find `mpc.js`, a partial
+clone of the `mpc` utility built using Mopidy.js on Node.
+
+Output from the original command:
+
+```
+$ mpc
+Jon Hopkins - C O S M
+[playing] #6/12   2:33/7:08 (35%)
+volume:100%   repeat: off   random: on    single: off   consume: off
+```
+
+Output from the `mpc.js` example:
+
+```
+$ ./examples/mpc.js
+Jon Hopkins - C O S M
+[playing] #6/-   2:33/7:08 (36%)
+volume:100%   repeat: off   random: on    single: off   consume: off
+```
 
 ## Changelog
 
