@@ -9,13 +9,13 @@
     "websocket",
     "json-rpc"
   ],
-  "homepage": "http://www.mopidy.com/",
+  "homepage": "https://www.mopidy.com/",
   "bugs": "https://github.com/mopidy/mopidy.js/issues",
   "license": "Apache-2.0",
   "main": "src/mopidy.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mopidy/mopidy.js.git"
+    "url": "https://github.com/mopidy/mopidy.js"
   },
   "scripts": {
     "test": "jest",
