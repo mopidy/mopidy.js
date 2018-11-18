@@ -1,7 +1,7 @@
 /* global window */
 /* eslint no-console:off, camelcase:off */
 
-import Mopidy from "../mopidy";
+import Mopidy from "../src/mopidy";
 
 const mopidy = new Mopidy({
   webSocketUrl: "ws://localhost:6680/mopidy/ws",

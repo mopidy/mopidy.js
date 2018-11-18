@@ -28,7 +28,7 @@
       "email": "paul.connolley@gmail.com"
     }
   ],
-  "main": "mopidy.js",
+  "main": "src/mopidy.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mopidy/mopidy.js.git"

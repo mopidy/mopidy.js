@@ -11,7 +11,8 @@ module.exports = {
     {
       displayName: "ESLint",
       runner: "jest-runner-eslint",
-      testMatch: ["<rootDir>/*.js", "<rootDir>/examples/*.js"],
+      testMatch: ["**/*.js"],
+      testPathIgnorePatterns: ["/dist/", "/node_modules/"],
     },
   ],
 };
