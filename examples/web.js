@@ -53,9 +53,9 @@ mopidy.on("websocket:outgoingMessage", data =>
 
 // Player
 
-function updatePlaybackState(state, time_position) {
-  if (time_position) {
-    el("playback-state").innerText = `${state} at ${time_position / 1000}s`;
+function updatePlaybackState(state, timePosition) {
+  if (timePosition) {
+    el("playback-state").innerText = `${state} at ${timePosition / 1000}s`;
   } else {
     el("playback-state").innerText = state;
   }
