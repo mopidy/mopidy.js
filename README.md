@@ -122,7 +122,7 @@ Output from the `mpc.js` example:
 ```
 $ ./examples/mpc.js
 Jon Hopkins - C O S M
-[playing] #6/-   2:33/7:08 (36%)
+[playing] #6/-   2:34/7:08 (36%)
 volume:100%   repeat: off   random: on    single: off   consume: off
 ```
 
