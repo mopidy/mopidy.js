@@ -19,7 +19,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "parcel build src/mopidy.js",
+    "build": "parcel build --global Mopidy src/mopidy.js",
     "start": "parcel examples/web.html"
   },
   "dependencies": {
