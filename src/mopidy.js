@@ -67,6 +67,23 @@ class Mopidy extends EventEmitter {
     this.on("state:offline", this._reconnect);
   }
 
+  off(...args) {
+    if (args.length === 0) {
+      this.removeAllListeners();
+    } else if (args.length === 1) {
+      const arg = args[0];
+      if (typeof arg === "string") {
+        this.removeAllListeners(arg);
+      } else {
+        throw Error(
+          "Expected no arguments, a string, or a string and a listener."
+        );
+      }
+    } else {
+      this.removeListener(...args);
+    }
+  }
+
   connect() {
     if (this._webSocket) {
       if (this._webSocket.readyState === Mopidy.WebSocket.OPEN) {
@@ -128,7 +145,7 @@ class Mopidy extends EventEmitter {
   }
 
   close() {
-    this.removeListener("state:offline", this._reconnect);
+    this.off("state:offline", this._reconnect);
     if (this._webSocket) {
       this._webSocket.close();
     }

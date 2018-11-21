@@ -65,6 +65,49 @@ describe("constructor", () => {
   });
 });
 
+describe(".off", () => {
+  test("with no args works", () => {
+    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+
+    this.mopidy.off();
+
+    expect(removeAllStub).toBeCalledWith();
+  });
+
+  test("with an event name works", () => {
+    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+
+    this.mopidy.off("some-event");
+
+    expect(removeAllStub).toBeCalledWith("some-event");
+  });
+
+  test("with a listener fails", () => {
+    const listener = () => {};
+    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+
+    try {
+      this.mopidy.off(listener);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe(
+        "Expected no arguments, a string, or a string and a listener."
+      );
+    }
+
+    expect(removeAllStub).not.toBeCalled();
+  });
+
+  test("with an event name and a listener works", () => {
+    const listener = () => {};
+    const removeStub = jest.spyOn(this.mopidy, "removeListener");
+
+    this.mopidy.off("some-event", listener);
+
+    expect(removeStub).toBeCalledWith("some-event", listener);
+  });
+});
+
 describe(".connect", () => {
   test("connects when autoConnect is false", () => {
     const mopidy = new Mopidy({
@@ -331,7 +374,7 @@ describe("._resetBackoffDelay", () => {
 
 describe(".close", () => {
   test("unregisters reconnection hooks", () => {
-    const spy = jest.spyOn(this.mopidy, "removeListener");
+    const spy = jest.spyOn(this.mopidy, "off");
 
     this.mopidy.close();
 
