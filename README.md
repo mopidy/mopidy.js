@@ -339,7 +339,7 @@ the second function passed to `.then()`, `failureHandler` will be called.
 With the foundation of `Promise`, you can simplify the code flow using the
 `async` and `await` keywords introduced to JavaScript in ES2017.
 
-The following is the same example written using async and await:
+The following is the same example written using `async` and `await`:
 
 ```js
 async function showPlaying() {
