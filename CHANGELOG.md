@@ -75,8 +75,6 @@
     Subscribe to more specific events using `mopidy.on(event, listener)`.
   - `mopidy.off(listener)` --
     Unsubscribe from specific events using `mopidy.off(event, listener)`.
-  - `mopidy.off(event)` --
-    Unsubscribe specific listeners using `mopidy.off(event, listener)`.
   - `mopidy.bind(...)`
   - `mopidy.errback(listener)`
 
@@ -84,9 +82,9 @@
 
   - `mopidy.on(event, listener)`
   - `mopidy.once(event, listener)`
-  - `mopidy.off(event, listener)` -- Note that Node.js only added
-    this method in Node.js 10.0.0. Consider upgrading Node.js or replacing
-    `mopidy.off()` with `mopidy.removeListener()`.
+  - `mopidy.off(event, listener)`
+  - `mopidy.off(event)`
+  - `mopidy.off()`
   - `mopidy.emit(event, ...)`
 
 - For exploring what events Mopidy.js emits, two new aggregate event types
