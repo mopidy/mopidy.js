@@ -2,6 +2,10 @@
 
 ## [1.0.0] - UNRELEASED
 
+- The prebuilt files at the
+  [GitHub release page](https://github.com/mopidy/mopidy.js/releases)
+  now includes a source map instead of an uncompressed version.
+
 - **Backwards incompatible:** The `Mopidy` class can no longer be instantiated
   without the `new` keyword.
 
