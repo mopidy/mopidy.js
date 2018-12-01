@@ -16,6 +16,7 @@ This library is the foundation of most Mopidy web clients.
 
 ## Table of contents <!-- omit in toc -->
 
+- [Compatibility](#compatibility)
 - [Installation](#installation)
   - [From npm](#from-npm)
   - [Prebuilt bundle](#prebuilt-bundle)
@@ -44,6 +45,10 @@ This library is the foundation of most Mopidy web clients.
   - [Web application](#web-application)
   - [Console application](#console-application)
 - [Changelog](#changelog)
+
+## Compatibility
+
+Mopidy.js should work with Mopidy >= 0.19.0.
 
 ## Installation
 
