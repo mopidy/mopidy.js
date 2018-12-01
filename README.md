@@ -4,7 +4,8 @@
 [![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
 [![Build Status](https://img.shields.io/travis/mopidy/mopidy.js.svg?style=flat)](https://travis-ci.org/mopidy/mopidy.js)
 
-Mopidy.js is a JavaScript library for controlling a Mopidy music server.
+Mopidy.js is a JavaScript library for controlling a
+[Mopidy music server](https://www.mopidy.com/).
 
 The library makes
 [Mopidy's core API](https://docs.mopidy.com/en/latest/api/core/)
