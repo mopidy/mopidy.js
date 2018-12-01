@@ -71,7 +71,7 @@ npm install mopidy
 
 ### Prebuilt bundle
 
-A minified versions of Mopidy.js, complete with sourcemap, is available from
+A minified versions of Mopidy.js, complete with sourcemaps, is available from
 the project's
 [GitHub release page](https://github.com/mopidy/mopidy.js/releases).
 
@@ -372,7 +372,7 @@ async function showPlaying() {
 ### Cleaning up
 
 If you for some reason want to clean up after Mopidy.js before the web page is
-closed or navigated away from, you can close the WebSocket, unregister all
+closed or navigated away from, you can close the WebSocket, unsubscribe all
 event listeners, and delete the object like this:
 
 ```js
@@ -380,7 +380,7 @@ event listeners, and delete the object like this:
 // collected will have the same effect, so this isn't strictly necessary.
 mopidy.close();
 
-// Unregister all event listeners. If you don't do this, you may have
+// Unsubscribe all event listeners. If you don't do this, you may have
 // lingering references to the object causing the garbage collector to not
 // clean up after it.
 mopidy.off();

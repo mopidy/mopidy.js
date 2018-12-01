@@ -94,7 +94,7 @@
 - For exploring what events Mopidy.js emits, two new aggregate event types
   has been added:
 
-  - `state`: This event emits online/offline/reconnection events,
+  - `state`: This event emits online/offline/reconnect events,
     like `state:online`.
   - `event`: This event emits server side events from Mopidy,
     like `event:trackPlaybackStarted`.
