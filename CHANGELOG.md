@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - UNRELEASED
+## [1.0.0] - 2018-12-01
 
 - The prebuilt files at the
   [GitHub release page](https://github.com/mopidy/mopidy.js/releases)
