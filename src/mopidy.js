@@ -248,7 +248,7 @@ class Mopidy extends EventEmitter {
   _getApiSpec() {
     return this._send({ method: "core.describe" })
       .then(this._createApi.bind(this))
-      .catch(this._handleWebSocketError);
+      .catch(this._handleWebSocketError.bind(this));
   }
 
   _createApi(methods) {
