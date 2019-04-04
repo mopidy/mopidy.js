@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2018-04-04
+
+- Fix `TypeError` on failure to get the API spec. (Contributed by Gamadril.
+  PR: #19)
+
 ## [1.0.0] - 2018-12-01
 
 - The prebuilt files at the
@@ -131,7 +136,7 @@
 
 - Default to `wss://` as the WebSocket protocol if the page is hosted on
   `https://`. This has no effect if the `webSocketUrl` setting is specified.
-  (Pull request: #2)
+  (PR: #2)
 
 - Upgrade dependencies.
 
@@ -179,6 +184,7 @@
 - Initial release as a Node.js module to the
   [npm registry](https://npmjs.org/).
 
+[1.0.1]: https://github.com/mopidy/mopidy.js/compare/v1.0.0..v1.0.1
 [1.0.0]: https://github.com/mopidy/mopidy.js/compare/v0.5.0..v1.0.0
 [0.5.0]: https://github.com/mopidy/mopidy.js/compare/v0.4.1..v0.5.0
 [0.4.1]: https://github.com/mopidy/mopidy.js/compare/v0.4.0..v0.4.1
