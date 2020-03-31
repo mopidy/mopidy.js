@@ -3,10 +3,12 @@ module.exports = {
     {
       displayName: "Browser tests",
       testEnvironment: "jsdom",
+      setupFilesAfterEnv: ["jest-extended"],
     },
     {
       displayName: "Node tests",
       testEnvironment: "node",
+      setupFilesAfterEnv: ["jest-extended"],
     },
     {
       displayName: "ESLint",
