@@ -32,7 +32,7 @@
     "prettier": "^2.0.2"
   },
   "engines": {
-    "node": ">= 8"
+    "node": ">= 10"
   },
   "files": [
     "src/mopidy.js"
