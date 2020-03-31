@@ -17,13 +17,13 @@ function el(id) {
 }
 
 function hide(selector) {
-  document.querySelectorAll(selector).forEach(e => {
+  document.querySelectorAll(selector).forEach((e) => {
     e.hidden = true;
   });
 }
 
 function show(selector) {
-  document.querySelectorAll(selector).forEach(e => {
+  document.querySelectorAll(selector).forEach((e) => {
     e.hidden = false;
   });
 }
@@ -44,10 +44,10 @@ function appendToEventLog(type, data) {
 }
 mopidy.on("state", appendToEventLog);
 mopidy.on("event", appendToEventLog);
-mopidy.on("websocket:incomingMessage", msg =>
+mopidy.on("websocket:incomingMessage", (msg) =>
   appendToEventLog("websocket:incomingMessage", JSON.parse(msg.data))
 );
-mopidy.on("websocket:outgoingMessage", data =>
+mopidy.on("websocket:outgoingMessage", (data) =>
   appendToEventLog("websocket:outgoingMessage", data)
 );
 
@@ -82,7 +82,7 @@ function updateCover(trackUri, images) {
 }
 
 function updateCurrentTrack(track) {
-  const artists = track.artists.map(a => a.name).join(", ");
+  const artists = track.artists.map((a) => a.name).join(", ");
   let albumName = track.album.name;
   if (track.album.date) {
     albumName = `${albumName} (${track.album.date})`;
@@ -95,7 +95,7 @@ function updateCurrentTrack(track) {
 
   mopidy.library
     .getImages([[track.uri]])
-    .then(result => updateCover(track.uri, result));
+    .then((result) => updateCover(track.uri, result));
 }
 
 // Event handlers
@@ -115,19 +115,19 @@ mopidy.on("state:online", () => {
   el("repeat").onclick = () =>
     mopidy.tracklist
       .getRepeat()
-      .then(state => mopidy.tracklist.setRepeat([!state]));
+      .then((state) => mopidy.tracklist.setRepeat([!state]));
   el("random").onclick = () =>
     mopidy.tracklist
       .getRandom()
-      .then(state => mopidy.tracklist.setRandom([!state]));
+      .then((state) => mopidy.tracklist.setRandom([!state]));
   el("single").onclick = () =>
     mopidy.tracklist
       .getSingle()
-      .then(state => mopidy.tracklist.setSingle([!state]));
+      .then((state) => mopidy.tracklist.setSingle([!state]));
   el("consume").onclick = () =>
     mopidy.tracklist
       .getConsume()
-      .then(state => mopidy.tracklist.setConsume([!state]));
+      .then((state) => mopidy.tracklist.setConsume([!state]));
 });
 
 mopidy.on("state:offline", () => {
@@ -156,16 +156,16 @@ mopidy.on("event:trackPlaybackResumed", () => {});
 mopidy.on("event:optionsChanged", () => {
   mopidy.tracklist
     .getRepeat()
-    .then(state => el("repeat").classList.toggle("active", state));
+    .then((state) => el("repeat").classList.toggle("active", state));
   mopidy.tracklist
     .getRandom()
-    .then(state => el("random").classList.toggle("active", state));
+    .then((state) => el("random").classList.toggle("active", state));
   mopidy.tracklist
     .getSingle()
-    .then(state => el("single").classList.toggle("active", state));
+    .then((state) => el("single").classList.toggle("active", state));
   mopidy.tracklist
     .getConsume()
-    .then(state => el("consume").classList.toggle("active", state));
+    .then((state) => el("consume").classList.toggle("active", state));
 });
 
 window.onload = () => {

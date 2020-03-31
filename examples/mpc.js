@@ -58,7 +58,7 @@ async function showPlaybackInfo() {
     return;
   }
 
-  const artists = track.artists.map(a => a.name).join(", ");
+  const artists = track.artists.map((a) => a.name).join(", ");
   console.log(`${artists} - ${track.name}`);
   console.log(
     `[${state}] ${renderTrackNumber(track)}   ` +
@@ -94,7 +94,7 @@ mopidy.on("state:online", async () => {
   process.exit();
 });
 
-mopidy.on("websocket:error", error => {
+mopidy.on("websocket:error", (error) => {
   console.log(`WebSocket error: ${error.message}`);
   process.exit(1);
 });
