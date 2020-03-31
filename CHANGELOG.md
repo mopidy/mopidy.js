@@ -20,7 +20,7 @@
   // Change from this:
   const mopidy = Mopidy(...);
   // To this:
-  const Mopidy = new Mopidy(...);
+  const mopidy = new Mopidy(...);
   ```
 
 - **Backwards incompatible:** The API methods no longer support two different
