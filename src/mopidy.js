@@ -134,7 +134,7 @@ class Mopidy extends EventEmitter {
       this.emit("reconnecting");
       this.connect();
     }, this._backoffDelay);
-    this._backoffDelay = this._backoffDelay * 2;
+    this._backoffDelay *= 2;
     if (this._backoffDelay > this._settings.backoffDelayMax) {
       this._backoffDelay = this._settings.backoffDelayMax;
     }
