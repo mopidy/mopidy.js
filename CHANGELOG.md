@@ -37,7 +37,7 @@
   ```
 
   To upgrade code using the long deprecated, but still default, calling
-  convention `by-position-only`, multiple steps are required.
+  convention `by-position-only` multiple steps are required.
 
   1.  The first step is to remove `callingConvention` from the settings object:
 
@@ -78,7 +78,7 @@
   Mopidy.js has switched from the unmaintained BANE implementation to Node.js'
   [`EventEmitter` API](https://nodejs.org/api/events.html).
 
-  The following methods has been removed:
+  The following methods have been removed:
 
   - `mopidy.on(listener)` --
     Subscribe to more specific events using `mopidy.on(event, listener)`.
@@ -96,8 +96,8 @@
   - `mopidy.off()`
   - `mopidy.emit(event, ...)`
 
-- For exploring what events Mopidy.js emits, two new aggregate event types
-  has been added:
+- For exploring what events Mopidy.js emit, two new aggregate event types
+  have been added:
 
   - `state`: This event emits online/offline/reconnect events,
     like `state:online`.
@@ -126,7 +126,7 @@
   - Testing: Jest has replaced Buster.JS and Sinon. (Fixes: #13)
   - Linting: ESLint has replaced JSHint.
   - Building: Parcel has replaced Browserify and Uglify.
-  - Tasks: npm scripts has replaced Grunt.
+  - Tasks: npm scripts have replaced Grunt.
   - Formatting: Prettier has replaced manual formatting.
 
 ## [0.5.0] - 2015-01-31
