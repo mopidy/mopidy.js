@@ -5,6 +5,8 @@ const Mopidy = require("../src/mopidy");
 
 const warn = jest.spyOn(global.console, "warn").mockImplementation(() => {});
 
+jest.useFakeTimers();
+
 beforeEach(() => {
   // Create a generic WebSocket mock
   const WebSocketMock = jest.fn().mockName("WebSocketMock");
@@ -248,13 +250,12 @@ describe("._reconnect", () => {
     this.mopidy._delegateEvents();
 
     this.mopidy.emit("state:offline");
+    jest.runOnlyPendingTimers();
 
     expect(spy).toBeCalledWith();
   });
 
   test("tries to connect after an increasing backoff delay", () => {
-    jest.useFakeTimers();
-
     const connectStub = jest
       .spyOn(this.mopidy, "connect")
       .mockImplementation(() => {});
@@ -268,6 +269,7 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(0);
 
     this.mopidy._reconnect();
+    jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 1000,
     });
@@ -283,6 +285,7 @@ describe("._reconnect", () => {
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
     this.mopidy._reconnect();
+    jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 2000,
     });
@@ -301,6 +304,7 @@ describe("._reconnect", () => {
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
     this.mopidy._reconnect();
+    jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 4000,
     });
@@ -317,8 +321,6 @@ describe("._reconnect", () => {
   });
 
   test("tries to connect at least about once per minute", () => {
-    jest.useFakeTimers();
-
     const connectStub = jest
       .spyOn(this.mopidy, "connect")
       .mockImplementation(() => {});
@@ -331,6 +333,7 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(0);
 
     this.mopidy._reconnect();
+    jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 64000,
     });
@@ -343,6 +346,7 @@ describe("._reconnect", () => {
     stateSpy.mockClear();
     pendingSpy.mockClear();
     this.mopidy._reconnect();
+    jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 64000,
     });
@@ -352,6 +356,25 @@ describe("._reconnect", () => {
     expect(connectStub).toBeCalledTimes(1);
     jest.advanceTimersByTime(64000);
     expect(connectStub).toBeCalledTimes(2);
+  });
+
+  test("emits reconnectionPending after state:offline event", () => {
+    const offlineSpy = jest.fn();
+    this.mopidy.on("state:offline", offlineSpy);
+    const reconnectionSpy = jest.fn();
+    this.mopidy.on("reconnectionPending", reconnectionSpy);
+
+    this.mopidy.emit("websocket:close");
+
+    expect(offlineSpy).toBeCalledWith();
+
+    // Before we check the reconnection spy we have to run pending timers again,
+    // because the reconnection happens in an async listener of the
+    // state:offline event.
+    jest.runOnlyPendingTimers();
+
+    expect(reconnectionSpy).toBeCalledWith({ timeToAttempt: 1000 });
+    expect(reconnectionSpy).toHaveBeenCalledAfter(offlineSpy);
   });
 });
 

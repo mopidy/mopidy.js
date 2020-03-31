@@ -123,21 +123,27 @@ class Mopidy extends EventEmitter {
   }
 
   _reconnect() {
-    this.emit("state", "reconnectionPending", {
-      timeToAttempt: this._backoffDelay,
+    // We asynchronously process the reconnect because we don't want to start
+    // emitting "reconnectionPending" events before we've finished handling the
+    // "state:offline" event, which would lead to emitting the events to
+    // listeners in the wrong order.
+    setImmediate(() => {
+      this.emit("state", "reconnectionPending", {
+        timeToAttempt: this._backoffDelay,
+      });
+      this.emit("reconnectionPending", {
+        timeToAttempt: this._backoffDelay,
+      });
+      setTimeout(() => {
+        this.emit("state", "reconnecting");
+        this.emit("reconnecting");
+        this.connect();
+      }, this._backoffDelay);
+      this._backoffDelay *= 2;
+      if (this._backoffDelay > this._settings.backoffDelayMax) {
+        this._backoffDelay = this._settings.backoffDelayMax;
+      }
     });
-    this.emit("reconnectionPending", {
-      timeToAttempt: this._backoffDelay,
-    });
-    setTimeout(() => {
-      this.emit("state", "reconnecting");
-      this.emit("reconnecting");
-      this.connect();
-    }, this._backoffDelay);
-    this._backoffDelay *= 2;
-    if (this._backoffDelay > this._settings.backoffDelayMax) {
-      this._backoffDelay = this._settings.backoffDelayMax;
-    }
   }
 
   _resetBackoffDelay() {
