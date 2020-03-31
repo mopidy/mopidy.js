@@ -307,7 +307,7 @@ Typical usage of a `Promise` can look like this:
 
 ```js
 function showPlaying() {
-  const printCurrentTrack = track => {
+  const printCurrentTrack = (track) => {
     if (track) {
       console.log(
         "Currently playing:",

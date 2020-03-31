@@ -1,169 +1,181 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Mopidy.js demo</title>
+    <style>
+      html,
+      body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
 
-<head>
-  <title>Mopidy.js demo</title>
-  <style>
-    html,
-    body {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
+      body {
+        background: #333;
+        color: #ccc;
+        font-family: "Roboto", "Open Sans", sans-serif;
+        font-size: 1.2rem;
+        line-height: 1.4;
+      }
 
-    body {
-      background: #333;
-      color: #ccc;
-      font-family: 'Roboto', 'Open Sans', sans-serif;
-      font-size: 1.2rem;
-      line-height: 1.4;
-    }
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-content: stretch;
+        height: 100%;
+      }
 
-    .container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-content: stretch;
-      height: 100%;
-    }
+      .player {
+        grid-column: 1;
+        padding: 2rem;
 
-    .player {
-      grid-column: 1;
-      padding: 2rem;
+        font-weight: 300;
+        text-align: center;
+      }
 
-      font-weight: 300;
-      text-align: center;
-    }
+      .event-log {
+        grid-column: 2;
+        margin: 0;
+        padding: 1rem;
+        max-height: 100vh;
+        overflow: auto;
 
-    .event-log {
-      grid-column: 2;
-      margin: 0;
-      padding: 1rem;
-      max-height: 100vh;
-      overflow: auto;
+        background: #444;
+        font-family: "Ubuntu Sans Mono", "Open Sans Mono", monospace;
+        font-size: 0.7rem;
+        line-height: 1.2;
+      }
 
-      background: #444;
-      font-family: 'Ubuntu Sans Mono', 'Open Sans Mono', monospace;
-      font-size: 0.7rem;
-      line-height: 1.2;
-    }
+      h1 {
+        font-size: 1.4rem;
+        font-weight: 300;
+      }
 
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 300;
-    }
+      button {
+        background: #444;
+        color: #ccc;
+        border: none;
+        padding: 0.4rem 0.8rem;
+      }
 
-    button {
-      background: #444;
-      color: #ccc;
-      border: none;
-      padding: 0.4rem 0.8rem;
-    }
+      button:hover {
+        background: #555;
+      }
 
-    button:hover {
-      background: #555;
-    }
+      button:active,
+      button.active {
+        background: #999;
+        color: #fff;
+      }
 
-    button:active,
-    button.active {
-      background: #999;
-      color: #fff;
-    }
+      code {
+        padding: 0.1rem;
+      }
 
-    code {
-      padding: 0.1rem;
-    }
+      .help {
+        margin-top: 2rem;
+      }
 
-    .help {
-      margin-top: 2rem;
-    }
+      .cover {
+        margin: auto;
+        max-width: 80%;
+      }
+      .cover img {
+        height: auto;
+        max-width: 100%;
+      }
 
-    .cover {
-      margin: auto;
-      max-width: 80%;
-    }
-    .cover img {
-      height: auto;
-      max-width: 100%;
-    }
+      .controls p {
+        display: inline-block;
+        margin: 0.5rem;
+        text-align: center;
+      }
 
-    .controls p {
-      display: inline-block;
-      margin: 0.5rem;
-      text-align: center;
-    }
+      .state {
+        font-size: 0.8rem;
+      }
+    </style>
+    <script src="web.js"></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.4.1/js/all.js"
+      integrity="sha384-L469/ELG4Bg9sDQbl0hvjMq8pOcqFgkSpwhwnslzvVVGpDjYJ6wJJyYjvG3u8XW7"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-    .state {
-      font-size: 0.8rem;
-    }
-  </style>
-  <script src="web.js"></script>
-  <script defer src="https://use.fontawesome.com/releases/v5.4.1/js/all.js" integrity="sha384-L469/ELG4Bg9sDQbl0hvjMq8pOcqFgkSpwhwnslzvVVGpDjYJ6wJJyYjvG3u8XW7"
-    crossorigin="anonymous"></script>
-</head>
+  <body>
+    <div class="container">
+      <div class="player">
+        <div class="help offline-only">
+          <h1>Server is offline</h1>
 
-<body>
+          <p>
+            Make sure the Mopidy config
+            <code>http/allowed_origins</code> includes
+            <code id="host">Unknown</code>.
+          </p>
 
-  <div class="container">
-    <div class="player">
+          <p>
+            Then start Mopidy so that the web server is available at
+            http://localhost:6680/.
+          </p>
+        </div>
 
-      <div class="help offline-only">
-        <h1>Server is offline</h1>
+        <div class="cover online-only">
+          <img id="cover" />
+        </div>
 
-        <p>
-          Make sure the Mopidy config <code>http/allowed_origins</code> includes
-          <code id="host">Unknown</code>.
+        <p class="current online-only">
+          <span id="current-track">Unknown</span><br />
+          <span id="current-artist">Unknown</span> -
+          <span id="current-album">Unknown</span><br />
         </p>
 
-        <p>
-          Then start Mopidy so that the web server is available at
-          http://localhost:6680/.
+        <div class="controls online-only">
+          <p id="playback-controls">
+            <button id="previous" title="Previous">
+              <i class="fas fa-step-backward"></i>
+            </button>
+            <button id="play" title="Play"><i class="fas fa-play"></i></button>
+            <button id="pause" title="Pause">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button id="next" title="Next">
+              <i class="fas fa-step-forward"></i>
+            </button>
+          </p>
+          <p id="tracklist-mode">
+            <button id="repeat" title="Repeat">
+              <i class="fas fa-redo"></i>
+            </button>
+            <button id="random" title="Random">
+              <i class="fas fa-random"></i>
+            </button>
+            <button id="single" title="Single">
+              <i class="fas fa-bullseye"></i>
+            </button>
+            <button id="consume" title="Consume">
+              <i class="fas fa-cookie-bite"></i>
+            </button>
+          </p>
+        </div>
+
+        <p class="state online-only">
+          <span id="playback-state"></span><br />
+          <code id="current-uri"></code>
         </p>
+
+        <div class="help online-only">
+          <p>
+            Open the developer console and use the <code>mopidy</code>
+            variable to explore the API.
+          </p>
+        </div>
       </div>
 
-      <div class="cover online-only">
-        <img id="cover">
-      </div>
-
-      <p class="current online-only">
-        <span id="current-track">Unknown</span><br>
-        <span id="current-artist">Unknown</span> -
-        <span id="current-album">Unknown</span><br>
-      </p>
-
-      <div class="controls online-only">
-        <p id="playback-controls">
-          <button id="previous" title="Previous"><i class="fas fa-step-backward"></i></button>
-          <button id="play" title="Play"><i class="fas fa-play"></i></button>
-          <button id="pause" title="Pause"><i class="fas fa-pause"></i></button>
-          <button id="next" title="Next"><i class="fas fa-step-forward"></i></button>
-        </p>
-        <p id="tracklist-mode">
-          <button id="repeat" title="Repeat"><i class="fas fa-redo"></i></button>
-          <button id="random" title="Random"><i class="fas fa-random"></i></button>
-          <button id="single" title="Single"><i class="fas fa-bullseye"></i></button>
-          <button id="consume" title="Consume"><i class="fas fa-cookie-bite"></i></button>
-        </p>
-      </div>
-
-      <p class="state online-only">
-        <span id="playback-state"></span><br>
-        <code id="current-uri"></code>
-      </p>
-
-      <div class="help online-only">
-        <p>
-          Open the developer console and use the <code>mopidy</code>
-          variable to explore the API.
-        </p>
-      </div>
-
+      <pre class="event-log" id="event-log"></pre>
     </div>
-
-    <pre class="event-log" id="event-log"></pre>
-  </div>
-  </div>
-
-</body>
-
+  </body>
 </html>

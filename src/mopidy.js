@@ -2,7 +2,7 @@ const EventEmitter = require("events");
 const WebSocket = require("isomorphic-ws");
 
 function snakeToCamel(name) {
-  return name.replace(/(_[a-z])/g, match =>
+  return name.replace(/(_[a-z])/g, (match) =>
     match.toUpperCase().replace("_", "")
   );
 }
@@ -96,22 +96,22 @@ class Mopidy extends EventEmitter {
       this._settings.webSocket ||
       new Mopidy.WebSocket(this._settings.webSocketUrl);
 
-    this._webSocket.onclose = close => {
+    this._webSocket.onclose = (close) => {
       this.emit("websocket:close", close);
     };
-    this._webSocket.onerror = error => {
+    this._webSocket.onerror = (error) => {
       this.emit("websocket:error", error);
     };
     this._webSocket.onopen = () => {
       this.emit("websocket:open");
     };
-    this._webSocket.onmessage = message => {
+    this._webSocket.onmessage = (message) => {
       this.emit("websocket:incomingMessage", message);
     };
   }
 
   _cleanup(closeEvent) {
-    Object.keys(this._pendingRequests).forEach(requestId => {
+    Object.keys(this._pendingRequests).forEach((requestId) => {
       const { reject } = this._pendingRequests[requestId];
       delete this._pendingRequests[requestId];
       const error = new Mopidy.ConnectionError("WebSocket closed");
@@ -252,7 +252,7 @@ class Mopidy extends EventEmitter {
   }
 
   _createApi(methods) {
-    const caller = method => (...args) => {
+    const caller = (method) => (...args) => {
       const message = { method };
       if (args.length === 0) {
         return this._send(message);
@@ -271,7 +271,7 @@ class Mopidy extends EventEmitter {
       return this._send(message);
     };
 
-    const getPath = fullName => {
+    const getPath = (fullName) => {
       let path = fullName.split(".");
       if (path.length >= 1 && path[0] === "core") {
         path = path.slice(1);
@@ -279,9 +279,9 @@ class Mopidy extends EventEmitter {
       return path;
     };
 
-    const createObjects = objPath => {
+    const createObjects = (objPath) => {
       let parentObj = this;
-      objPath.forEach(objName => {
+      objPath.forEach((objName) => {
         const camelObjName = snakeToCamel(objName);
         parentObj[camelObjName] = parentObj[camelObjName] || {};
         parentObj = parentObj[camelObjName];
@@ -289,7 +289,7 @@ class Mopidy extends EventEmitter {
       return parentObj;
     };
 
-    const createMethod = fullMethodName => {
+    const createMethod = (fullMethodName) => {
       const methodPath = getPath(fullMethodName);
       const methodName = snakeToCamel(methodPath.slice(-1)[0]);
       const object = createObjects(methodPath.slice(0, -1));

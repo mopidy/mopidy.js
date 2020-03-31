@@ -193,7 +193,7 @@ describe("._cleanup", () => {
     expect(cleanup).toBeCalledWith(closeEvent);
   });
 
-  test("rejects all pending requests", done => {
+  test("rejects all pending requests", (done) => {
     const closeEvent = {};
     expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
 
@@ -205,11 +205,11 @@ describe("._cleanup", () => {
 
     expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
     Promise.all([
-      promise1.catch(error => error),
-      promise2.catch(error => error),
+      promise1.catch((error) => error),
+      promise2.catch((error) => error),
     ])
-      .then(errors => {
-        errors.forEach(error => {
+      .then((errors) => {
+        errors.forEach((error) => {
           expect(error).toBeInstanceOf(Error);
           expect(error).toBeInstanceOf(Mopidy.ConnectionError);
           expect(error.message).toBe("WebSocket closed");
@@ -468,14 +468,14 @@ describe("._send", () => {
     });
   });
 
-  test("immediately rejects request if CONNECTING", done => {
+  test("immediately rejects request if CONNECTING", (done) => {
     this.mopidy._webSocket.readyState = Mopidy.WebSocket.CONNECTING;
 
     const promise = this.mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
@@ -484,14 +484,14 @@ describe("._send", () => {
       .then(done);
   });
 
-  test("immediately rejects request if CLOSING", done => {
+  test("immediately rejects request if CLOSING", (done) => {
     this.mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSING;
 
     const promise = this.mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
@@ -500,14 +500,14 @@ describe("._send", () => {
       .then(done);
   });
 
-  test("immediately rejects request if CLOSED", done => {
+  test("immediately rejects request if CLOSED", (done) => {
     this.mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSED;
 
     const promise = this.mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
@@ -619,7 +619,7 @@ describe("._handleResponse", () => {
     expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
   });
 
-  test("resolves requests which get results back", done => {
+  test("resolves requests which get results back", (done) => {
     const promise = this.mopidy._send({ method: "bar" });
     const responseResult = {};
     const responseMessage = {
@@ -632,13 +632,13 @@ describe("._handleResponse", () => {
 
     expect.hasAssertions();
     promise
-      .then(result => {
+      .then((result) => {
         expect(result).toBe(responseResult);
       })
       .then(done);
   });
 
-  test("rejects and logs requests which get errors back", done => {
+  test("rejects and logs requests which get errors back", (done) => {
     const promise = this.mopidy._send({ method: "bar" });
     const responseError = {
       code: -32601,
@@ -655,7 +655,7 @@ describe("._handleResponse", () => {
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(warn).toBeCalledWith("Server returned error:", responseError);
         expect(error).toBeInstanceOf(Error);
         expect(error.code).toBe(responseError.code);
@@ -665,7 +665,7 @@ describe("._handleResponse", () => {
       .then(done);
   });
 
-  test("rejects and logs requests which get errors without data", done => {
+  test("rejects and logs requests which get errors without data", (done) => {
     const promise = this.mopidy._send({ method: "bar" });
     const responseError = {
       code: -32601,
@@ -682,7 +682,7 @@ describe("._handleResponse", () => {
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(warn).toBeCalledWith("Server returned error:", responseError);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ServerError);
@@ -693,7 +693,7 @@ describe("._handleResponse", () => {
       .then(done);
   });
 
-  test("rejects and logs responses without result or error", done => {
+  test("rejects and logs responses without result or error", (done) => {
     const promise = this.mopidy._send({ method: "bar" });
     const responseMessage = {
       jsonrpc: "2.0",
@@ -704,7 +704,7 @@ describe("._handleResponse", () => {
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(warn).toBeCalledWith(
           "Response without 'result' or 'error' received. Message was:",
           responseMessage
@@ -759,7 +759,7 @@ describe("._getApiSpec", () => {
     expect(spy).toBeCalledWith();
   });
 
-  test("gets API description from server and calls _createApi", done => {
+  test("gets API description from server and calls _createApi", (done) => {
     const methods = {};
     const sendStub = jest
       .spyOn(this.mopidy, "_send")
@@ -903,12 +903,12 @@ describe("API method calls", () => {
     });
   });
 
-  test("rejects with error if more than one argument", done => {
+  test("rejects with error if more than one argument", (done) => {
     const promise = this.mopidy.foo([1, 2], { c: 3, d: 4 });
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toBe(
@@ -918,12 +918,12 @@ describe("API method calls", () => {
       .then(done);
   });
 
-  test("rejects with error if string", done => {
+  test("rejects with error if string", (done) => {
     const promise = this.mopidy.foo("hello");
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(TypeError);
@@ -932,12 +932,12 @@ describe("API method calls", () => {
       .then(done);
   });
 
-  test("rejects with error if number", done => {
+  test("rejects with error if number", (done) => {
     const promise = this.mopidy.foo(1337);
 
     expect.hasAssertions();
     promise
-      .catch(error => {
+      .catch((error) => {
         expect(this.sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(TypeError);
