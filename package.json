@@ -9,7 +9,7 @@
     "websocket",
     "json-rpc"
   ],
-  "homepage": "https://www.mopidy.com/",
+  "homepage": "https://mopidy.com/",
   "bugs": "https://github.com/mopidy/mopidy.js/issues",
   "license": "Apache-2.0",
   "main": "src/mopidy.js",
