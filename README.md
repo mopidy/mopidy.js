@@ -57,13 +57,7 @@ Promise APIs, weighing in at around 12 kB minified.
 
 ### From npm
 
-You can install Mopidy.js from npm using Yarn:
-
-```
-yarn add mopidy
-```
-
-Or using npm:
+You can install Mopidy.js from npm:
 
 ```
 npm install mopidy
@@ -77,12 +71,12 @@ the project's
 
 ### Building from source
 
-Install [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
+Install [Node.js](https://nodejs.org/).
 
 Enter the source directory, and install all dependencies:
 
 ```
-yarn
+npm install
 ```
 
 That's it.
@@ -90,13 +84,13 @@ That's it.
 You can now run the tests and linters:
 
 ```
-yarn test
+npm test
 ```
 
 To build updated JavaScript files for browser use in `dist/`, run:
 
 ```
-yarn build
+npm run build
 ```
 
 ## Usage
@@ -412,9 +406,9 @@ To run the demo application yourself:
 
 3. Clone Mopidy.js from GitHub.
 
-4. Run `yarn` to install dependencies.
+4. Run `npm install` to install dependencies.
 
-5. Run `yarn start` to run the demo application at http://localhost:1234/.
+5. Run `npm start` to run the demo application at http://localhost:1234/.
 
 This setup uses hot module reloading, so any changes you do to the demo
 application files, `examples/web.{html,js}`, will instantly be visible in
