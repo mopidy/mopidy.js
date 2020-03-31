@@ -13,7 +13,11 @@ beforeEach(() => {
   WebSocketMock.CLOSING = 2;
   WebSocketMock.CLOSED = 3;
   WebSocketMock.mockImplementation(() => ({
-    close: jest.fn().mockName("close"),
+    close: jest
+      .fn(function close() {
+        this.onclose({});
+      })
+      .mockName("close"),
     send: jest.fn().mockName("send"),
     readyState: WebSocketMock.CLOSED,
   }));
@@ -374,11 +378,20 @@ describe("._resetBackoffDelay", () => {
 
 describe(".close", () => {
   test("unregisters reconnection hooks", () => {
-    const spy = jest.spyOn(this.mopidy, "off");
+    const offSpy = jest.spyOn(this.mopidy, "off");
+    const reconnectingSpy = jest.fn();
+    this.mopidy.on("reconnecting", reconnectingSpy);
+    const reconnectionPendingSpy = jest.fn();
+    this.mopidy.on("reconnectionPending", reconnectionPendingSpy);
 
     this.mopidy.close();
 
-    expect(spy).toBeCalledWith("state:offline", this.mopidy._reconnect);
+    expect(offSpy).toBeCalledWith("state:offline", this.mopidy._reconnect);
+
+    jest.runOnlyPendingTimers(); // Handle the "state:offline" event
+
+    expect(reconnectingSpy).not.toHaveBeenCalled();
+    expect(reconnectionPendingSpy).not.toHaveBeenCalled();
   });
 
   test("closes the WebSocket", () => {
