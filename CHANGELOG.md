@@ -37,7 +37,7 @@
   ```
 
   To upgrade code using the long deprecated, but still default, calling
-  convention `by-position-only`, multiple steps is required.
+  convention `by-position-only`, multiple steps are required.
 
   1.  The first step is to remove `callingConvention` from the settings object:
 
