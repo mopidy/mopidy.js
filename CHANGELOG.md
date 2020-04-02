@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] - 2020-04-02
+
+- More sensible event ordering: `state:offline` is now emitted before
+  `reconnectionPending`. (Contributed by Alan Norbauer. PR #24)
+
+- Upgrade all development and production dependencies.
+
 ## [1.0.1] - 2019-04-04
 
 - Fix `TypeError` on failure to get the API spec. (Contributed by Gamadril.
@@ -184,6 +191,7 @@
 - Initial release as a Node.js module to the
   [npm registry](https://npmjs.org/).
 
+[1.1.0]: https://github.com/mopidy/mopidy.js/compare/v1.0.1..v1.1.0
 [1.0.1]: https://github.com/mopidy/mopidy.js/compare/v1.0.0..v1.0.1
 [1.0.0]: https://github.com/mopidy/mopidy.js/compare/v0.5.0..v1.0.0
 [0.5.0]: https://github.com/mopidy/mopidy.js/compare/v0.4.1..v0.5.0
