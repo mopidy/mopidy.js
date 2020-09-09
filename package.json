@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "isomorphic-ws": "^4.0.1",
+    "setimmediate": "^1.0.5",
     "ws": "^7.2.3"
   },
   "devDependencies": {

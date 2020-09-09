@@ -1,3 +1,4 @@
+require("setimmediate");
 const EventEmitter = require("events");
 const WebSocket = require("isomorphic-ws");
 
