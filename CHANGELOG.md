@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - UNRELEASED
+
+- Replace `setImmediate(fn)` usage with `setTimeout(fn, 0)` as
+  `setImmediate()` is non-standard and not supported in all browsers.
+  (Fixes: #30)
+
 ## [1.1.0] - 2020-04-02
 
 - More sensible event ordering: `state:offline` is now emitted before
