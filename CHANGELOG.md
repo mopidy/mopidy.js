@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.1] - UNRELEASED
+## [1.1.1] - 2020-09-10
 
 - Replace `setImmediate(fn)` usage with `setTimeout(fn, 0)` as
   `setImmediate()` is non-standard and not supported in all browsers.
@@ -197,6 +197,7 @@
 - Initial release as a Node.js module to the
   [npm registry](https://npmjs.org/).
 
+[1.1.1]: https://github.com/mopidy/mopidy.js/compare/v1.1.0..v1.1.1
 [1.1.0]: https://github.com/mopidy/mopidy.js/compare/v1.0.1..v1.1.0
 [1.0.1]: https://github.com/mopidy/mopidy.js/compare/v1.0.0..v1.0.1
 [1.0.0]: https://github.com/mopidy/mopidy.js/compare/v0.5.0..v1.0.0
