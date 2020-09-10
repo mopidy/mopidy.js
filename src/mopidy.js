@@ -127,7 +127,7 @@ class Mopidy extends EventEmitter {
     // emitting "reconnectionPending" events before we've finished handling the
     // "state:offline" event, which would lead to emitting the events to
     // listeners in the wrong order.
-    setImmediate(() => {
+    setTimeout(() => {
       this.emit("state", "reconnectionPending", {
         timeToAttempt: this._backoffDelay,
       });
@@ -143,7 +143,7 @@ class Mopidy extends EventEmitter {
       if (this._backoffDelay > this._settings.backoffDelayMax) {
         this._backoffDelay = this._settings.backoffDelayMax;
       }
-    });
+    }, 0);
   }
 
   _resetBackoffDelay() {
