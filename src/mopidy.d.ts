@@ -679,10 +679,10 @@ declare namespace Mopidy {
         /**
          * the time position in milliseconds
          */
-        timePosition,
+        time_position,
       }: {
         tl_track: models.TlTrack;
-        timePosition: number;
+        time_position: number;
       }) => void;
       /**
        * Called whenever track playback is paused.
@@ -695,10 +695,10 @@ declare namespace Mopidy {
         /**
          * the time position in milliseconds
          */
-        timePosition,
+        time_position,
       }: {
         tl_track: models.TlTrack;
-        timePosition: number;
+        time_position: number;
       }) => void;
       /**
        * Called whenever track playback is resumed.
@@ -711,10 +711,10 @@ declare namespace Mopidy {
         /**
          * the time position in milliseconds
          */
-        timePosition,
+        time_position,
       }: {
         tl_track: models.TlTrack;
-        timePosition: number;
+        time_position: number;
       }) => void;
       /**
        * Called whenever a new track starts playing.
