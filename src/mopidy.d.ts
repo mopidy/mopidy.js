@@ -1,9 +1,9 @@
 // Type definitions for Mopidy.js v1.1.0, Mopidy v3.0.2 WebSocket API
 
-export = Mopidy
+export = Mopidy;
 
 declare class Mopidy {
-  // ----------------- MOPIDY.JS-SPECIFIC API -----------------
+  // ----------------- MOPIDY.JS SPECIFIC API -----------------
 
   /**
    * Mopidy.js is a JavaScript library for controlling a Mopidy music server.
@@ -28,13 +28,15 @@ declare class Mopidy {
   // ----------------- EVENT SUBSCRIPTION -----------------
 
   on<K extends keyof Mopidy.StrictEvents>(
-    name: K, listener: Mopidy.StrictEvents[K]
+    name: K,
+    listener: Mopidy.StrictEvents[K]
   ): this;
 
   off(): void;
   off<K extends keyof Mopidy.StrictEvents>(
-    name: K, listener: Mopidy.StrictEvents[K]
- ): this;
+    name: K,
+    listener: Mopidy.StrictEvents[K]
+  ): this;
 
   // ----------------- CORE API -----------------
 
@@ -172,12 +174,7 @@ declare namespace Mopidy {
   }
 
   // https://docs.mopidy.com/en/latest/api/models/
-  type ModelType =
-    | "album"
-    | "artist"
-    | "directory"
-    | "playlist"
-    | "track";
+  type ModelType = "album" | "artist" | "directory" | "playlist" | "track";
   namespace models {
     class Ref<T extends ModelType> {
       constructor({ uri, name, type }: { uri: URI; name: string; type: T });
@@ -553,7 +550,7 @@ declare namespace Mopidy {
         uri,
         name,
         tracks,
-        last_modified
+        last_modified,
       }: {
         /**
          * The URI of the image
@@ -570,7 +567,7 @@ declare namespace Mopidy {
         /**
          * The playlist modification time in milliseconds since Unix epoch
          */
-        last_modified: number
+        last_modified: number;
       });
       /**
        * The URI of the image
@@ -615,12 +612,12 @@ declare namespace Mopidy {
        * Called whenever the mute state is changed.
        */
       "event:muteChanged": ({
-        mute
+        mute,
       }: {
         /**
          * the new mute state
          */
-        mute: boolean
+        mute: boolean;
       }) => void;
       "event:optionsChanged": () => void;
       "event:playbackStateChanged": ({
@@ -786,12 +783,12 @@ declare namespace Mopidy {
        * Triggers the `mopidy.core.CoreListener.tracklist_changed()` event.
        */
       remove({
-        criteria
+        criteria,
       }: {
         /**
          * (dict, of (string, list) pairs) – one or more rules to match by
          */
-        criteria: { [key: string]: string[] }
+        criteria: { [key: string]: string[] };
       }): Promise<models.TlTrack[]>;
 
       /**
@@ -809,7 +806,7 @@ declare namespace Mopidy {
       move({
         start,
         end,
-        to_position
+        to_position,
       }: {
         /**
          * position of first track to move
@@ -823,7 +820,7 @@ declare namespace Mopidy {
          * new position for the tracks
          */
         to_position: number;
-      }): Promise<void>
+      }): Promise<void>;
 
       /**
        * Shuffles the entire tracklist. If `start` and `end` is given
@@ -833,7 +830,7 @@ declare namespace Mopidy {
        */
       shuffle({
         start,
-        end
+        end,
       }: {
         /**
          * position of first track to shuffle
@@ -843,7 +840,7 @@ declare namespace Mopidy {
          * position after last track to shuffle
          */
         end?: number;
-      }): Promise<void>
+      }): Promise<void>;
 
       /**
        * Get tracklist as list of `mopidy.models.TlTrack`
@@ -915,12 +912,12 @@ declare namespace Mopidy {
        * Only tracks that match all the given criteria are returned.
        */
       filter({
-        criteria
+        criteria,
       }: {
         /**
          * (dict, of (string, list) pairs) – one or more rules to match by
          */
-        criteria: { [key: string]: string[] }
+        criteria: { [key: string]: string[] };
       }): Promise<models.TlTrack[]>;
 
       // ----------------- FUTURE STATE -----------------
@@ -956,28 +953,33 @@ declare namespace Mopidy {
        * Not necessarily the same track as `next_track()`.
        */
       eotTrack({
-        tl_track
+        tl_track,
       }: {
         /**
          * The reference track
          */
-        tl_track?: models.TlTrack
+        tl_track?: models.TlTrack;
       }): Promise<models.TlTrack | null>;
 
-
       // ----------------- DEPRECATED -----------------
-
 
       /**
        * @deprecated Deprecated since version 3.0: Use `get_next_tlid()` instead.
        */
-      nextTrack({ tl_track }:{ tl_track: models.TlTrack }): Promise<models.TlTrack | null>;
+      nextTrack({
+        tl_track,
+      }: {
+        tl_track: models.TlTrack;
+      }): Promise<models.TlTrack | null>;
 
       /**
        * @deprecated Deprecated since version 3.0: Use `get_previous_tlid()` instead.
        */
-      previousTrack({ tl_track }:{ tl_track: models.TlTrack }): Promise<models.TlTrack | null>;
-
+      previousTrack({
+        tl_track,
+      }: {
+        tl_track: models.TlTrack;
+      }): Promise<models.TlTrack | null>;
 
       // ----------------- OPTIONS -----------------
 
@@ -1087,12 +1089,12 @@ declare namespace Mopidy {
        * Seeks to time position given in milliseconds.
        */
       seek({
-        time_position
+        time_position,
       }: {
         /**
          * time position in milliseconds
          */
-        time_position: number
+        time_position: number;
       }): Promise<boolean>;
 
       // ----------------- CURRENT TRACK -----------------
@@ -1163,12 +1165,12 @@ declare namespace Mopidy {
        *    `Ref.directory(uri='dummy:directory:/bar', name='bar')`
        */
       browse({
-        uri
+        uri,
       }: {
         /**
          * URI to browse
          */
-        uri: URI
+        uri: URI;
       }): Promise<models.Ref<any>[]>;
 
       /**
@@ -1225,19 +1227,19 @@ declare namespace Mopidy {
        * If the URI expands to multiple tracks, the returned list will contain them all.
        */
       lookup({
-        uris
-      }:{
+        uris,
+      }: {
         /**
          * A list of URI's
          */
-        uris: string[]
+        uris: string[];
       }): Promise<{ [index: string]: models.Track[] }>;
 
       /**
        *
        * Refresh library. Limit to URI and below if an URI is given.
        */
-      refresh({ uri }: { uri?: string }): Promise<void>
+      refresh({ uri }: { uri?: string }): Promise<void>;
 
       /**
        * Lookup the images for the given URIs
@@ -1250,12 +1252,12 @@ declare namespace Mopidy {
        * will simply return an empty list for that URI.
        */
       getImages({
-        uris
-      }:{
+        uris,
+      }: {
         /**
          * A list of URI's
          */
-        uris: string[]
+        uris: string[];
       }): Promise<{ [index: string]: models.Image[] }>;
     }
 
@@ -1314,7 +1316,7 @@ declare namespace Mopidy {
        */
       create({
         name,
-        uri_scheme
+        uri_scheme,
       }: {
         /**
          * name of the new playlist
@@ -1342,12 +1344,12 @@ declare namespace Mopidy {
        * nothing is done and None is returned.
        */
       save({
-        playlist
+        playlist,
       }: {
         /**
          * The playlist
          */
-        playlist: models.Playlist
+        playlist: models.Playlist;
       }): Promise<models.Playlist | null>;
 
       /**
@@ -1358,12 +1360,12 @@ declare namespace Mopidy {
        * Returns True if deleted, False otherwise.
        */
       delete({
-        uri
+        uri,
       }: {
         /**
          * URI of the playlist to delete
          */
-        uri: URI
+        uri: URI;
       }): Promise<boolean>;
     }
 
