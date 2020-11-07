@@ -390,15 +390,15 @@ declare namespace Mopidy {
       /**
        * The tracks matching the search query
        */
-      readonly tracks: Track[] | undefined;
+      readonly tracks: Track[];
       /**
        * The artists matching the search query
        */
-      readonly artists: Artist[] | undefined;
+      readonly artists: Artist[];
       /**
        * The albums matching the search query
        */
-      readonly albums: Album[] | undefined;
+      readonly albums: Album[];
     }
 
     class Artist {
