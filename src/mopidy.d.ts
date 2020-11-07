@@ -44,32 +44,32 @@ declare class Mopidy {
    * Manages everything related to the list of tracks we will play. See
    * TracklistController. Undefined before Mopidy connects.
    */
-  tracklist: Mopidy.Core.TracklistController | undefined;
+  tracklist?: Mopidy.Core.TracklistController;
   /**
    * Manages playback state and the current playing track. See
    * PlaybackController. Undefined before Mopidy connects.
    */
-  playback: Mopidy.Core.PlaybackController | undefined;
+  playback?: Mopidy.Core.PlaybackController;
   /**
    * Manages the music library, e.g. searching and browsing for music. See
    * LibraryController. Undefined before Mopidy connects.
    */
-  library: Mopidy.Core.LibraryController | undefined;
+  library?: Mopidy.Core.LibraryController;
   /**
    * Manages stored playlists. See PlaylistsController. Undefined before
    * Mopidy connects.
    */
-  playlists: Mopidy.Core.PlaylistsController | undefined;
+  playlists?: Mopidy.Core.PlaylistsController;
   /**
    * Manages volume and muting. See MixerController. Undefined before Mopidy
    * connects.
    */
-  mixer: Mopidy.Core.MixerController | undefined;
+  mixer?: Mopidy.Core.MixerController;
   /**
    * Keeps record of what tracks have been played. See HistoryController.
    * Undefined before Mopidy connects.
    */
-  history: Mopidy.Core.HistoryController | undefined;
+  history?: Mopidy.Core.HistoryController;
 
   /**
    * Get list of URI schemes we can handle
