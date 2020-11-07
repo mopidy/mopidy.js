@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0] - UNRELEASED
+
+- Add TypeScript definitions. (Fixes: #27, #33)
+
 ## [1.1.1] - 2020-09-10
 
 - Replace `setImmediate(fn)` usage with `setTimeout(fn, 0)` as
