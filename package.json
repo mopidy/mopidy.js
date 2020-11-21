@@ -37,7 +37,7 @@
     "node": ">= 10"
   },
   "files": [
-    "src/mopidy.js"
+    "src/**/*"
   ],
   "scripts": {
     "test": "jest",
