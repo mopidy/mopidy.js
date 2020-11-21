@@ -83,6 +83,7 @@ declare class Mopidy {
 
 declare namespace mopidy {
   type ValueOf<T> = T[keyof T];
+  type URI = string;
 
   interface Options {
     /**
@@ -123,22 +124,7 @@ declare namespace mopidy {
      */
     webSocket?: WebSocket;
   }
-  type URI = string;
-  type PlaybackState = "playing" | "paused" | "stopped";
-  type QueryField =
-    | "uri"
-    | "track_name"
-    | "album"
-    | "artist"
-    | "albumartist"
-    | "composer"
-    | "performer"
-    | "track_no"
-    | "genre"
-    | "date"
-    | "comment"
-    | "any";
-  type Query = { [key in QueryField]?: string[] };
+
   interface StrictEvents extends core.CoreListener {
     /**
      * The events from Mopidy are also emitted under the aggregate event named
@@ -606,6 +592,22 @@ declare namespace mopidy {
    * changes in core see CoreListener.
    */
   namespace core {
+    type PlaybackState = "playing" | "paused" | "stopped";
+    type QueryField =
+      | "uri"
+      | "track_name"
+      | "album"
+      | "artist"
+      | "albumartist"
+      | "composer"
+      | "performer"
+      | "track_no"
+      | "genre"
+      | "date"
+      | "comment"
+      | "any";
+    type Query = { [key in QueryField]?: string[] };
+
     // ----------------- Events -----------------
 
     /**
