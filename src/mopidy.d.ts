@@ -180,8 +180,9 @@ declare namespace mopidy {
   }
 
   // https://docs.mopidy.com/en/latest/api/models/
-  type ModelType = "album" | "artist" | "directory" | "playlist" | "track";
   namespace models {
+    type ModelType = "album" | "artist" | "directory" | "playlist" | "track";
+
     class Ref<T extends ModelType> {
       constructor({ uri, name, type }: { uri: URI; name: string; type: T });
       static album(): Ref<"album">;
