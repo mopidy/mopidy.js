@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2020-11-21
+
+- Include TypeScript definitions in npm package.
+
 ## [1.2.0] - 2020-11-21
 
 - Add TypeScript definitions. (Fixes: #27, #33)
@@ -201,6 +205,7 @@
 - Initial release as a Node.js module to the
   [npm registry](https://npmjs.org/).
 
+[1.2.1]: https://github.com/mopidy/mopidy.js/compare/v1.2.0..v1.2.1
 [1.2.0]: https://github.com/mopidy/mopidy.js/compare/v1.1.1..v1.2.0
 [1.1.1]: https://github.com/mopidy/mopidy.js/compare/v1.1.0..v1.1.1
 [1.1.0]: https://github.com/mopidy/mopidy.js/compare/v1.0.1..v1.1.0
