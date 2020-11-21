@@ -13,7 +13,7 @@ declare class Mopidy {
    *
    * This library is the foundation of most Mopidy web clients.
    */
-  constructor(options: Mopidy.Options);
+  constructor(options: mopidy.Options);
   /**
    * Explicit connect function for when autoConnect:false is passed to
    * constructor.
@@ -27,15 +27,15 @@ declare class Mopidy {
 
   // ----------------- EVENT SUBSCRIPTION -----------------
 
-  on<K extends keyof Mopidy.StrictEvents>(
+  on<K extends keyof mopidy.StrictEvents>(
     name: K,
-    listener: Mopidy.StrictEvents[K]
+    listener: mopidy.StrictEvents[K]
   ): this;
 
   off(): void;
-  off<K extends keyof Mopidy.StrictEvents>(
+  off<K extends keyof mopidy.StrictEvents>(
     name: K,
-    listener: Mopidy.StrictEvents[K]
+    listener: mopidy.StrictEvents[K]
   ): this;
 
   // ----------------- CORE API -----------------
@@ -44,32 +44,32 @@ declare class Mopidy {
    * Manages everything related to the list of tracks we will play. See
    * TracklistController. Undefined before Mopidy connects.
    */
-  tracklist?: Mopidy.Core.TracklistController;
+  tracklist?: mopidy.core.TracklistController;
   /**
    * Manages playback state and the current playing track. See
    * PlaybackController. Undefined before Mopidy connects.
    */
-  playback?: Mopidy.Core.PlaybackController;
+  playback?: mopidy.core.PlaybackController;
   /**
    * Manages the music library, e.g. searching and browsing for music. See
    * LibraryController. Undefined before Mopidy connects.
    */
-  library?: Mopidy.Core.LibraryController;
+  library?: mopidy.core.LibraryController;
   /**
    * Manages stored playlists. See PlaylistsController. Undefined before
    * Mopidy connects.
    */
-  playlists?: Mopidy.Core.PlaylistsController;
+  playlists?: mopidy.core.PlaylistsController;
   /**
    * Manages volume and muting. See MixerController. Undefined before Mopidy
    * connects.
    */
-  mixer?: Mopidy.Core.MixerController;
+  mixer?: mopidy.core.MixerController;
   /**
    * Keeps record of what tracks have been played. See HistoryController.
    * Undefined before Mopidy connects.
    */
-  history?: Mopidy.Core.HistoryController;
+  history?: mopidy.core.HistoryController;
 
   /**
    * Get list of URI schemes we can handle
@@ -81,7 +81,7 @@ declare class Mopidy {
   getVersion(): Promise<string>;
 }
 
-declare namespace Mopidy {
+declare namespace mopidy {
   type ValueOf<T> = T[keyof T];
 
   interface Options {
@@ -139,7 +139,7 @@ declare namespace Mopidy {
     | "comment"
     | "any";
   type Query = { [key in QueryField]?: string[] };
-  interface StrictEvents extends Core.CoreListener {
+  interface StrictEvents extends core.CoreListener {
     /**
      * The events from Mopidy are also emitted under the aggregate event named
      * event.
@@ -604,7 +604,7 @@ declare namespace Mopidy {
    * be accessing core as a Pykka actor. If you are only interested in being notified about
    * changes in core see CoreListener.
    */
-  namespace Core {
+  namespace core {
     // ----------------- Events -----------------
 
     /**
