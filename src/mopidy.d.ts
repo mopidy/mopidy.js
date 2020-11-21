@@ -141,6 +141,12 @@ declare namespace Mopidy {
   type Query = { [key in QueryField]?: string[] };
   interface StrictEvents extends Core.CoreListener {
     /**
+     * The events from Mopidy are also emitted under the aggregate event named
+     * event.
+     */
+    event: (args?: unknown) => void;
+
+    /**
      * Client state
      *
      * You can get notified about when the Mopidy.js client is connected to the
