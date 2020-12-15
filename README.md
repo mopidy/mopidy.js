@@ -443,4 +443,4 @@ then run `./examples/mpc.js`.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [Releases at GitHub](https://github.com/mopidy/mopidy.js/releases).
