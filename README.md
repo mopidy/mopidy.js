@@ -65,7 +65,7 @@ npm install mopidy
 
 ### Prebuilt bundle
 
-A minified versions of Mopidy.js, complete with sourcemaps, is available from
+A minified version of Mopidy.js, complete with sourcemaps, is available from
 the project's
 [GitHub release page](https://github.com/mopidy/mopidy.js/releases).
 
@@ -235,7 +235,7 @@ Any calls you make before the `state:online` event is emitted will fail with a
 `Mopidy.ConnectionError` error.
 
 All methods in [Mopidy's core API](https://docs.mopidy.com/en/latest/api/core/)
-is available via Mopidy.js. For example, the
+are available via Mopidy.js. For example, the
 `mopidy.core.PlaybackController.get_state()` Python method is available
 in JSON-RPC as `core.playback.get_state` and in Mopidy.js as
 `mopidy.playback.getState()`.
