@@ -1,4 +1,4 @@
-// Type definitions for Mopidy.js v1.1.0, Mopidy v3.0.2 WebSocket API
+// Type definitions for Mopidy.js v1.2.0, Mopidy v3.0.2 WebSocket API
 
 export = Mopidy;
 
@@ -13,7 +13,7 @@ declare class Mopidy {
    *
    * This library is the foundation of most Mopidy web clients.
    */
-  constructor(options: mopidy.Options);
+  constructor(options: Mopidy.Options);
   /**
    * Explicit connect function for when autoConnect:false is passed to
    * constructor.
@@ -27,15 +27,15 @@ declare class Mopidy {
 
   // ----------------- EVENT SUBSCRIPTION -----------------
 
-  on<K extends keyof mopidy.StrictEvents>(
+  on<K extends keyof Mopidy.StrictEvents>(
     name: K,
-    listener: mopidy.StrictEvents[K]
+    listener: Mopidy.StrictEvents[K]
   ): this;
 
   off(): void;
-  off<K extends keyof mopidy.StrictEvents>(
+  off<K extends keyof Mopidy.StrictEvents>(
     name: K,
-    listener: mopidy.StrictEvents[K]
+    listener: Mopidy.StrictEvents[K]
   ): this;
 
   // ----------------- CORE API -----------------
@@ -44,32 +44,32 @@ declare class Mopidy {
    * Manages everything related to the list of tracks we will play. See
    * TracklistController. Undefined before Mopidy connects.
    */
-  tracklist?: mopidy.core.TracklistController;
+  tracklist?: Mopidy.core.TracklistController;
   /**
    * Manages playback state and the current playing track. See
    * PlaybackController. Undefined before Mopidy connects.
    */
-  playback?: mopidy.core.PlaybackController;
+  playback?: Mopidy.core.PlaybackController;
   /**
    * Manages the music library, e.g. searching and browsing for music. See
    * LibraryController. Undefined before Mopidy connects.
    */
-  library?: mopidy.core.LibraryController;
+  library?: Mopidy.core.LibraryController;
   /**
    * Manages stored playlists. See PlaylistsController. Undefined before
    * Mopidy connects.
    */
-  playlists?: mopidy.core.PlaylistsController;
+  playlists?: Mopidy.core.PlaylistsController;
   /**
    * Manages volume and muting. See MixerController. Undefined before Mopidy
    * connects.
    */
-  mixer?: mopidy.core.MixerController;
+  mixer?: Mopidy.core.MixerController;
   /**
    * Keeps record of what tracks have been played. See HistoryController.
    * Undefined before Mopidy connects.
    */
-  history?: mopidy.core.HistoryController;
+  history?: Mopidy.core.HistoryController;
 
   /**
    * Get list of URI schemes we can handle
@@ -81,7 +81,7 @@ declare class Mopidy {
   getVersion(): Promise<string>;
 }
 
-declare namespace mopidy {
+declare namespace Mopidy {
   type ValueOf<T> = T[keyof T];
   type URI = string;
 
