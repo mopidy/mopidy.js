@@ -258,24 +258,28 @@ class Mopidy extends EventEmitter {
   }
 
   _createApi(methods) {
-    const caller = (method) => (...args) => {
-      const message = { method };
-      if (args.length === 0) {
+    const caller =
+      (method) =>
+      (...args) => {
+        const message = { method };
+        if (args.length === 0) {
+          return this._send(message);
+        }
+        if (args.length > 1) {
+          return Promise.reject(
+            new Error(
+              "Expected zero arguments, a single array, or a single object."
+            )
+          );
+        }
+        if (!Array.isArray(args[0]) && args[0] !== Object(args[0])) {
+          return Promise.reject(
+            new TypeError("Expected an array or an object.")
+          );
+        }
+        [message.params] = args;
         return this._send(message);
-      }
-      if (args.length > 1) {
-        return Promise.reject(
-          new Error(
-            "Expected zero arguments, a single array, or a single object."
-          )
-        );
-      }
-      if (!Array.isArray(args[0]) && args[0] !== Object(args[0])) {
-        return Promise.reject(new TypeError("Expected an array or an object."));
-      }
-      [message.params] = args;
-      return this._send(message);
-    };
+      };
 
     const getPath = (fullName) => {
       let path = fullName.split(".");
