@@ -13,7 +13,7 @@ declare class Mopidy {
    *
    * This library is the foundation of most Mopidy web clients.
    */
-  constructor(options: Mopidy.Options);
+  constructor(options?: Mopidy.Options);
   /**
    * Explicit connect function for when autoConnect:false is passed to
    * constructor.
@@ -96,7 +96,7 @@ declare namespace Mopidy {
      * In a non-browser environment, where document.location isn't available, it
      * defaults to ws://localhost/mopidy/ws.
      */
-    webSocketUrl: string;
+    webSocketUrl?: string;
     /**
      * Whether or not to connect to the WebSocket on instance creation. Defaults
      * to true.
