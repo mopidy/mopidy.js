@@ -1,8 +1,8 @@
 # Mopidy.js
 
-[![Latest npm version](https://img.shields.io/npm/v/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
-[![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg?style=flat)](https://www.npmjs.org/package/mopidy)
-[![Build Status](https://img.shields.io/travis/mopidy/mopidy.js.svg?style=flat)](https://travis-ci.org/mopidy/mopidy.js)
+[![Latest npm version](https://img.shields.io/npm/v/mopidy.svg)](https://www.npmjs.org/package/mopidy)
+[![Number of npm downloads](https://img.shields.io/npm/dm/mopidy.svg)](https://www.npmjs.org/package/mopidy)
+[![CI build status](https://img.shields.io/github/actions/workflow/status/mopidy/mopidy-nad/ci.yml?branch=main)](https://github.com/mopidy/homebrew-mopidy/actions)
 
 Mopidy.js is a JavaScript library for controlling a
 [Mopidy music server](https://www.mopidy.com/).
