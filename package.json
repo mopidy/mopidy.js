@@ -32,7 +32,7 @@
     "jest-extended": "^0.11.5",
     "jest-runner-eslint": "^0.10.0",
     "parcel-bundler": "^1.12.5",
-    "prettier": "^2.3.0"
+    "prettier": "^2.8.8"
   },
   "engines": {
     "node": ">= 18"
