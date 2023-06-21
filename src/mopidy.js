@@ -143,7 +143,7 @@ class Mopidy extends EventEmitter {
       if (this._backoffDelay > this._settings.backoffDelayMax) {
         this._backoffDelay = this._settings.backoffDelayMax;
       }
-    }, 0);
+    }, 1);
   }
 
   _resetBackoffDelay() {
