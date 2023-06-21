@@ -1,2 +1,3 @@
-.cache/
-dist/
+/.cache/
+/dist/
+/node_modules/

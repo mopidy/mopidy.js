@@ -1,5 +1,5 @@
-const EventEmitter = require("events");
-const WebSocket = require("isomorphic-ws");
+import EventEmitter from "events";
+import WebSocket from "modern-isomorphic-ws";
 
 function snakeToCamel(name) {
   return name.replace(/(_[a-z])/g, (match) =>
@@ -341,4 +341,4 @@ Mopidy.prototype._nextRequestId = (() => {
   };
 })();
 
-module.exports = Mopidy;
+export default Mopidy;

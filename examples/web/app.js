@@ -1,7 +1,5 @@
-/* global window */
+/* global window, Mopidy */
 /* eslint no-console:off, camelcase:off */
-
-import Mopidy from "../src/mopidy";
 
 const mopidy = new Mopidy({
   webSocketUrl: "ws://localhost:6680/mopidy/ws",
@@ -82,6 +80,9 @@ function updateCover(trackUri, images) {
 }
 
 function updateCurrentTrack(track) {
+  if (track === null) {
+    return;
+  }
   const artists = track.artists.map((a) => a.name).join(", ");
   let albumName = track.album.name;
   if (track.album.date) {
