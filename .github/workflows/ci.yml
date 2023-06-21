@@ -1,23 +1,29 @@
 name: CI
 
 on:
-  push:
-    branches: [master]
   pull_request:
-    branches: [master]
+  push:
+    branches:
+      - main
 
 jobs:
-  Build:
-    runs-on: ubuntu-latest
-
+  main:
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [10.x, 12.x, 14.x, 16.x]
+        include:
+          - name: "Test: Node 18"
+            node-version: 18.x
+          - name: "Test: Node 20"
+            node-version: 20.x
+
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
