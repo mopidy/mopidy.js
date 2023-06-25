@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "files": ["global.d.ts"]
+}

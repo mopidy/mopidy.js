@@ -1,4 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
 import nodePolyfills from "rollup-plugin-polyfill-node";
 import serve from "rollup-plugin-serve";
 
@@ -6,7 +7,7 @@ import pkg from "./package.json";
 
 export default [
   {
-    input: "src/mopidy.js",
+    input: "src/mopidy.ts",
     external: ["modern-isomorphic-ws"],
     output: {
       name: "Mopidy",
@@ -17,6 +18,7 @@ export default [
       },
     },
     plugins: [
+      typescript(),
       resolve(), // Find dependencies in node_modules
       nodePolyfills(), // Polyfill Node.js modules for the browser
       serve({
@@ -27,7 +29,7 @@ export default [
     ],
   },
   {
-    input: "src/mopidy.js",
+    input: "src/mopidy.ts",
     external: ["modern-isomorphic-ws", "events"],
     output: [
       {
@@ -39,5 +41,6 @@ export default [
         format: "es",
       },
     ],
+    plugins: [typescript()],
   },
 ];

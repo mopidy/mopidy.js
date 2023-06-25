@@ -20,7 +20,6 @@
   "main": "dist/mopidy.cjs.js",
   "module": "dist/mopidy.esm.js",
   "browser": "dist/mopidy.umd.js",
-  "types": "dist/mopidy.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/mopidy/mopidy.js"
@@ -30,7 +29,10 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.5.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "@types/jest": "^29.5.2",
     "eslint": "^8.43.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -45,7 +47,9 @@
     "prettier": "^2.8.8",
     "rollup": "^3.25.1",
     "rollup-plugin-polyfill-node": "^0.12.0",
-    "rollup-plugin-serve": "^2.0.2"
+    "rollup-plugin-serve": "^2.0.2",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.1.3"
   },
   "engines": {
     "node": ">= 18"
