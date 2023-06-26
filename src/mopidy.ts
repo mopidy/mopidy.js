@@ -4,22 +4,23 @@ import { default as IsomorphicWebSocket } from "modern-isomorphic-ws";
 type OutgoingMessage = {
   method: string;
   params?: any[] | { [key: string]: any };
-  id?: number | string;
+  id: JsonRpcId;
 };
-type IncomingMessage = MopidyEvent | JSONRPCResponse;
+type IncomingMessage = MopidyEvent | JsonRpcResponse;
 type MopidyEvent = { event: string; [key: string]: any };
 
-type JSONRPCMessage = { jsonrpc: "2.0" };
-type JSONRPCRequest = JSONRPCMessage & OutgoingMessage;
-type JSONRPCResponse = JSONRPCMessage & { id: number | string };
-type JSONRPCError<T> = JSONRPCResponse & {
+type JsonRpcMessage = { jsonrpc: "2.0" };
+type JsonRpcId = number | string;
+type JsonRpcRequest = JsonRpcMessage & OutgoingMessage;
+type JsonRpcResponse = JsonRpcMessage & { id: JsonRpcId };
+type JsonRpcError<T> = JsonRpcResponse & {
   error: {
     code: number;
     message: string;
     data?: T;
   };
 };
-type JSONRPCResult<T> = JSONRPCResponse & { result: T };
+type JSONRPCResult<T> = JsonRpcResponse & { result: T };
 
 function wsMessageIsEvent(data: IncomingMessage): data is MopidyEvent {
   return Object.hasOwnProperty.call(data, "event");
@@ -27,18 +28,18 @@ function wsMessageIsEvent(data: IncomingMessage): data is MopidyEvent {
 
 function wsMessageIsJsonRpcResponse(
   data: IncomingMessage
-): data is JSONRPCResponse {
+): data is JsonRpcResponse {
   return Object.hasOwnProperty.call(data, "id");
 }
 
 function jsonRpcResponseIsError<T>(
-  response: JSONRPCResponse
-): response is JSONRPCError<T> {
+  response: JsonRpcResponse
+): response is JsonRpcError<T> {
   return Object.hasOwnProperty.call(response, "error");
 }
 
 function jsonRpcResponseIsResult<T>(
-  response: JSONRPCResponse
+  response: JsonRpcResponse
 ): response is JSONRPCResult<T> {
   return Object.hasOwnProperty.call(response, "result");
 }
@@ -65,8 +66,13 @@ class Mopidy extends EventEmitter {
   _console: Mopidy.Console;
   _options: Mopidy.Options;
   _backoffDelay: number;
-  _pendingRequests: object;
-  _webSocket: WebSocket;
+  _pendingRequests: {
+    [key: JsonRpcId]: {
+      resolve: (value: IncomingMessage) => void;
+      reject: (reason?: any) => void;
+    };
+  };
+  _webSocket: WebSocket | null;
 
   /**
    * Mopidy.js is a JavaScript library for controlling a Mopidy music server.
@@ -76,7 +82,7 @@ class Mopidy extends EventEmitter {
    *
    * This library is the foundation of most Mopidy web clients.
    */
-  constructor(options?: Mopidy.Options) {
+  constructor(options?: Partial<Mopidy.Options>) {
     super();
     this._console = this._getConsole(options || {});
     this._options = this._configure(options || {});
@@ -89,7 +95,7 @@ class Mopidy extends EventEmitter {
     }
   }
 
-  _getConsole(options: Mopidy.Options): Mopidy.Console {
+  _getConsole(options: Partial<Mopidy.Options>): Mopidy.Console {
     if (typeof options.console !== "undefined") {
       return options.console;
     }
@@ -103,8 +109,7 @@ class Mopidy extends EventEmitter {
     };
   }
 
-  _configure(options: Mopidy.Options): Mopidy.Options {
-    const newOptions = { ...options };
+  _configure(options: Partial<Mopidy.Options>): Mopidy.Options {
     const protocol =
       typeof document !== "undefined" && document.location.protocol === "https:"
         ? "wss://"
@@ -112,14 +117,14 @@ class Mopidy extends EventEmitter {
     const currentHost =
       (typeof document !== "undefined" && document.location.host) ||
       "localhost";
-    newOptions.webSocketUrl =
-      options.webSocketUrl || `${protocol}${currentHost}/mopidy/ws`;
-    if (options.autoConnect !== false) {
-      newOptions.autoConnect = true;
-    }
-    newOptions.backoffDelayMin = options.backoffDelayMin || 1000;
-    newOptions.backoffDelayMax = options.backoffDelayMax || 64000;
-    return newOptions;
+    return {
+      ...options,
+      autoConnect: options.autoConnect !== false,
+      webSocketUrl:
+        options.webSocketUrl || `${protocol}${currentHost}/mopidy/ws`,
+      backoffDelayMin: options.backoffDelayMin || 1000,
+      backoffDelayMax: options.backoffDelayMax || 64000,
+    };
   }
 
   _delegateEvents(): void {
@@ -150,22 +155,24 @@ class Mopidy extends EventEmitter {
       this._webSocket.close();
     }
 
-    this._webSocket =
+    const webSocket: WebSocket =
       this._options.webSocket ||
       new Mopidy.WebSocket(this._options.webSocketUrl);
 
-    this._webSocket.onclose = (close) => {
+    webSocket.onclose = (close: CloseEvent) => {
       this.emit("websocket:close", close);
     };
-    this._webSocket.onerror = (error) => {
+    webSocket.onerror = (error: Event) => {
       this.emit("websocket:error", error);
     };
-    this._webSocket.onopen = () => {
+    webSocket.onopen = () => {
       this.emit("websocket:open");
     };
-    this._webSocket.onmessage = (message) => {
+    webSocket.onmessage = (message: MessageEvent<string>) => {
       this.emit("websocket:incomingMessage", message);
     };
+
+    this._webSocket = webSocket;
   }
 
   _cleanup(closeEvent: CloseEvent): void {
@@ -219,12 +226,16 @@ class Mopidy extends EventEmitter {
     }
   }
 
-  _handleWebSocketError(error) {
-    this._console.warn("WebSocket error:", error.stack || error);
+  _handleWebSocketError(error: Event) {
+    this._console.warn("WebSocket error:", (error as any).stack || error);
   }
 
   _send(message: OutgoingMessage): Promise<IncomingMessage> {
-    switch (this._webSocket.readyState) {
+    if (this._webSocket === null) {
+      return Promise.reject(new Mopidy.ConnectionError("WebSocket is null"));
+    }
+    const webSocket = this._webSocket;
+    switch (webSocket.readyState) {
       case Mopidy.WebSocket.CONNECTING:
         return Promise.reject(
           new Mopidy.ConnectionError("WebSocket is still connecting")
@@ -239,14 +250,14 @@ class Mopidy extends EventEmitter {
         );
       default:
         return new Promise((resolve, reject) => {
-          const jsonRpcMessage: JSONRPCRequest = {
+          const jsonRpcRequest: JsonRpcRequest = {
             ...message,
             jsonrpc: "2.0",
             id: nextRequestId(),
           };
-          this._pendingRequests[jsonRpcMessage.id] = { resolve, reject };
-          this._webSocket.send(JSON.stringify(jsonRpcMessage));
-          this.emit("websocket:outgoingMessage", jsonRpcMessage);
+          this._pendingRequests[jsonRpcRequest.id] = { resolve, reject };
+          webSocket.send(JSON.stringify(jsonRpcRequest));
+          this.emit("websocket:outgoingMessage", jsonRpcRequest);
         });
     }
   }
@@ -274,7 +285,7 @@ class Mopidy extends EventEmitter {
     }
   }
 
-  _handleResponse(responseMessage: JSONRPCResponse) {
+  _handleResponse(responseMessage: JsonRpcResponse) {
     if (
       !Object.hasOwnProperty.call(this._pendingRequests, responseMessage.id)
     ) {
@@ -308,16 +319,16 @@ class Mopidy extends EventEmitter {
   }
 
   _handleEvent(eventMessage: MopidyEvent): void {
-    const data = { ...eventMessage };
+    const data: Partial<MopidyEvent> = { ...eventMessage };
     delete data.event;
     const eventName = `event:${snakeToCamel(eventMessage.event)}`;
     this.emit("event", eventName, data);
     this.emit(eventName, data);
   }
 
-  _getApiSpec(): Promise<IncomingMessage> {
+  _getApiSpec(): Promise<void> {
     return this._send({ method: "core.describe" })
-      .then(this._createApi.bind(this))
+      .then((message) => this._createApi(message as APISpec))
       .catch(this._handleWebSocketError.bind(this));
   }
 
@@ -354,7 +365,7 @@ class Mopidy extends EventEmitter {
     };
 
     const createObjects = (objPath: string[]): any => {
-      let parentObj = this;
+      let parentObj: any = this;
       objPath.forEach((objName) => {
         const camelObjName = snakeToCamel(objName);
         parentObj[camelObjName] = parentObj[camelObjName] || {};
@@ -475,7 +486,7 @@ namespace Mopidy {
   export class ConnectionError extends Error {
     closeEvent?: CloseEvent;
 
-    constructor(message) {
+    constructor(message: string) {
       super(message);
       this.name = "ConnectionError";
     }
@@ -485,7 +496,7 @@ namespace Mopidy {
     code?: number;
     data?: any;
 
-    constructor(message) {
+    constructor(message: string) {
       super(message);
       this.name = "ServerError";
     }
@@ -502,23 +513,23 @@ namespace Mopidy {
      * In a non-browser environment, where document.location isn't available, it
      * defaults to ws://localhost/mopidy/ws.
      */
-    webSocketUrl?: string;
+    webSocketUrl: string;
     /**
      * Whether or not to connect to the WebSocket on instance creation. Defaults
      * to true.
      */
-    autoConnect?: boolean;
+    autoConnect: boolean;
     /**
      * The minimum number of milliseconds to wait after a connection error before
      * we try to reconnect. For every failed attempt, the backoff delay is doubled
      * until it reaches backoffDelayMax. Defaults to 1000.
      */
-    backoffDelayMin?: number;
+    backoffDelayMin: number;
     /**
      * The maximum number of milliseconds to wait after a connection error before
      * we try to reconnect. Defaults to 64000.
      */
-    backoffDelayMax?: number;
+    backoffDelayMax: number;
     /**
      * If set, this object will be used to log errors from Mopidy.js. This is
      * mostly useful for testing Mopidy.js. Defaults to console.

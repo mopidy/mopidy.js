@@ -1,7 +1,16 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true
+    /* Emit */
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "dist",
+
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true
   },
-  "include": ["src/**/*"],
-  "files": ["global.d.ts"]
+  "include": ["src/**/*"]
 }

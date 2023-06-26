@@ -19,7 +19,7 @@ Output when playing:
   volume:100%   repeat: off   random: on    single: off   consume: off
 */
 
-const Mopidy = require("../src/mopidy");
+import Mopidy from "..";
 
 const mopidy = new Mopidy({
   autoConnect: false,

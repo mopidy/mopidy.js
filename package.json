@@ -20,6 +20,7 @@
   "main": "dist/mopidy.cjs.js",
   "module": "dist/mopidy.esm.js",
   "browser": "dist/mopidy.umd.js",
+  "typings": "dist/mopidy.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/mopidy/mopidy.js"
