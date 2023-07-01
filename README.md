@@ -387,7 +387,7 @@ mopidy = null;
 
 ### Web application
 
-![Web demo](examples/web.png)
+![Web demo](examples/web/screenshot.png)
 
 In the `examples/` directory of the Git repo, you can find a small demo web
 application using Mopidy.js. The left half of the screen shows what's
@@ -411,7 +411,7 @@ To run the demo application yourself:
 5. Run `npm start` to run the demo application at http://localhost:1234/.
 
 This setup uses hot module reloading, so any changes you do to the demo
-application files, `examples/web.{html,js}`, will instantly be visible in
+application files, `examples/web/*`, will instantly be visible in
 your browser. Thus, this can serve as a nice playing ground to get to know
 the capabilities of Mopidy and Mopidy.js.
 

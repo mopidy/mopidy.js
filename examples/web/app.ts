@@ -1,7 +1,5 @@
-/* global window */
+/* global window, Mopidy */
 /* eslint no-console:off, camelcase:off */
-
-import Mopidy from "../src/mopidy";
 
 const mopidy = new Mopidy({
   webSocketUrl: "ws://localhost:6680/mopidy/ws",
@@ -12,19 +10,23 @@ window.mopidy = mopidy;
 
 // Utilities
 
-function el(id) {
-  return document.getElementById(id);
+function el(id: string): HTMLElement {
+  const el = document.getElementById(id);
+  if (el === null) {
+    throw new Error(`Element #${id} not found`);
+  }
+  return el;
 }
 
-function hide(selector) {
+function hide(selector: string): void {
   document.querySelectorAll(selector).forEach((e) => {
-    e.hidden = true;
+    (e as HTMLElement).hidden = true;
   });
 }
 
-function show(selector) {
+function show(selector: string): void {
   document.querySelectorAll(selector).forEach((e) => {
-    e.hidden = false;
+    (e as HTMLElement).hidden = false;
   });
 }
 
@@ -53,7 +55,7 @@ mopidy.on("websocket:outgoingMessage", (data) =>
 
 // Player
 
-function updatePlaybackState(state, timePosition) {
+function updatePlaybackState(state, timePosition?: number) {
   if (timePosition) {
     el("playback-state").innerText = `${state} at ${timePosition / 1000}s`;
   } else {
@@ -82,6 +84,9 @@ function updateCover(trackUri, images) {
 }
 
 function updateCurrentTrack(track) {
+  if (track === null) {
+    return;
+  }
   const artists = track.artists.map((a) => a.name).join(", ");
   let albumName = track.album.name;
   if (track.album.date) {

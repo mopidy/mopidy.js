@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    /* Emit */
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "dist",
+
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true
+  },
+  "include": ["src/**/*"]
+}

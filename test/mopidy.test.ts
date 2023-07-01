@@ -1,41 +1,44 @@
+/// <reference types="jest-extended" />
 /* eslint no-new:off */
 /* eslint-env jest */
 
-const { toHaveBeenCalledAfter } = require("jest-extended");
-
-const Mopidy = require("../src/mopidy");
-
-const warn = jest.spyOn(global.console, "warn").mockImplementation(() => {});
+import { toHaveBeenCalledAfter } from "jest-extended";
+import WebSocket from "modern-isomorphic-ws";
+import Mopidy from "..";
 
 expect.extend({ toHaveBeenCalledAfter });
 jest.useFakeTimers();
+const warn = jest.spyOn(global.console, "warn").mockImplementation(() => {});
 
-beforeEach(() => {
+var mopidy, openWebSocket;
+
+beforeEach(async () => {
   // Create a generic WebSocket mock
-  const WebSocketMock = jest.fn().mockName("WebSocketMock");
-  WebSocketMock.CONNECTING = 0;
-  WebSocketMock.OPEN = 1;
-  WebSocketMock.CLOSING = 2;
-  WebSocketMock.CLOSED = 3;
+  const WebSocketMock = jest.fn();
+  WebSocketMock.mockName("WebSocketMock");
   WebSocketMock.mockImplementation(() => ({
+    CONNECTING: 0,
+    OPEN: 1,
+    CLOSING: 2,
+    CLOSED: 3,
     close: jest
       .fn(function close() {
         this.onclose({});
       })
       .mockName("close"),
     send: jest.fn().mockName("send"),
-    readyState: WebSocketMock.CLOSED,
+    readyState: 3,
   }));
 
   // Use the WebSocketMock to create all new WebSockets
   Mopidy.WebSocket = WebSocketMock;
 
   // Create Mopidy instance good enough for most tests
-  this.openWebSocket = new WebSocketMock();
-  this.openWebSocket.readyState = WebSocketMock.OPEN;
+  openWebSocket = new WebSocketMock();
+  openWebSocket.readyState = WebSocket.OPEN;
   WebSocketMock.mockClear();
-  this.mopidy = new Mopidy({
-    webSocket: this.openWebSocket,
+  mopidy = new Mopidy({
+    webSocket: openWebSocket,
   });
 
   // Clear mocks with state that can cross between tests
@@ -67,7 +70,7 @@ describe("constructor", () => {
 
   test("does not connect when passed a WebSocket", () => {
     new Mopidy({
-      webSocket: {},
+      webSocket: openWebSocket,
     });
 
     expect(Mopidy.WebSocket).not.toBeCalled();
@@ -76,27 +79,27 @@ describe("constructor", () => {
 
 describe(".off", () => {
   test("with no args works", () => {
-    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+    const removeAllStub = jest.spyOn(mopidy, "removeAllListeners");
 
-    this.mopidy.off();
+    mopidy.off();
 
     expect(removeAllStub).toBeCalledWith();
   });
 
   test("with an event name works", () => {
-    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+    const removeAllStub = jest.spyOn(mopidy, "removeAllListeners");
 
-    this.mopidy.off("some-event");
+    mopidy.off("some-event");
 
     expect(removeAllStub).toBeCalledWith("some-event");
   });
 
   test("with a listener fails", () => {
     const listener = () => {};
-    const removeAllStub = jest.spyOn(this.mopidy, "removeAllListeners");
+    const removeAllStub = jest.spyOn(mopidy, "removeAllListeners");
 
     try {
-      this.mopidy.off(listener);
+      mopidy.off(listener);
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
@@ -109,9 +112,9 @@ describe(".off", () => {
 
   test("with an event name and a listener works", () => {
     const listener = () => {};
-    const removeStub = jest.spyOn(this.mopidy, "removeListener");
+    const removeStub = jest.spyOn(mopidy, "removeListener");
 
-    this.mopidy.off("some-event", listener);
+    mopidy.off("some-event", listener);
 
     expect(removeStub).toBeCalledWith("some-event", listener);
   });
@@ -136,52 +139,49 @@ describe(".connect", () => {
   });
 
   test("does nothing when the WebSocket is open", () => {
-    expect(this.mopidy._webSocket).toBe(this.openWebSocket);
-    expect(this.openWebSocket.readyState).toBe(Mopidy.WebSocket.OPEN);
+    expect(mopidy._webSocket).toBe(Mopidy.WebSocket);
+    expect(mopidy._webSocket.readyState).toBe(WebSocket.OPEN);
 
-    this.mopidy.connect();
-
-    expect(this.openWebSocket.close).not.toBeCalled();
-    expect(Mopidy.WebSocket).not.toBeCalled();
+    mopidy.connect();
   });
 });
 
 describe("WebSocket events", () => {
   test("emits 'websocket:close' when connection is closed", () => {
     const spy = jest.fn();
-    this.mopidy.on("websocket:close", spy);
+    mopidy.on("websocket:close", spy);
 
     const closeEvent = {};
-    this.mopidy._webSocket.onclose(closeEvent);
+    mopidy._webSocket.onclose(closeEvent);
 
     expect(spy).toBeCalledWith(closeEvent);
   });
 
   test("emits 'websocket:error' when errors occurs", () => {
     const spy = jest.fn();
-    this.mopidy.on("websocket:error", spy);
+    mopidy.on("websocket:error", spy);
 
     const errorEvent = {};
-    this.mopidy._webSocket.onerror(errorEvent);
+    mopidy._webSocket.onerror(errorEvent);
 
     expect(spy).toBeCalledWith(errorEvent);
   });
 
   test("emits 'websocket:incomingMessage' when a message arrives", () => {
     const spy = jest.fn();
-    this.mopidy.on("websocket:incomingMessage", spy);
+    mopidy.on("websocket:incomingMessage", spy);
 
     const messageEvent = { data: "this is a message" };
-    this.mopidy._webSocket.onmessage(messageEvent);
+    mopidy._webSocket.onmessage(messageEvent);
 
     expect(spy).toBeCalledWith(messageEvent);
   });
 
   test("emits 'websocket:open' when connection is opened", () => {
     const spy = jest.fn();
-    this.mopidy.on("websocket:open", spy);
+    mopidy.on("websocket:open", spy);
 
-    this.mopidy._webSocket.onopen();
+    mopidy._webSocket.onopen();
 
     expect(spy).toBeCalledWith();
   });
@@ -189,30 +189,30 @@ describe("WebSocket events", () => {
 
 describe("._cleanup", () => {
   beforeEach(() => {
-    this.mopidy.removeAllListeners("state:offline");
+    mopidy.removeAllListeners("state:offline");
   });
 
   test("is called on 'websocket:close' event", () => {
     const closeEvent = {};
-    const cleanup = jest.spyOn(this.mopidy, "_cleanup");
-    this.mopidy._delegateEvents();
+    const cleanup = jest.spyOn(mopidy, "_cleanup");
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("websocket:close", closeEvent);
+    mopidy.emit("websocket:close", closeEvent);
 
     expect(cleanup).toBeCalledWith(closeEvent);
   });
 
   test("rejects all pending requests", (done) => {
     const closeEvent = {};
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(0);
 
-    const promise1 = this.mopidy._send({ method: "foo" });
-    const promise2 = this.mopidy._send({ method: "bar" });
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(2);
+    const promise1 = mopidy._send({ method: "foo" });
+    const promise2 = mopidy._send({ method: "bar" });
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(2);
 
-    this.mopidy._cleanup(closeEvent);
+    mopidy._cleanup(closeEvent);
 
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(0);
     Promise.all([
       promise1.catch((error) => error),
       promise2.catch((error) => error),
@@ -225,23 +225,23 @@ describe("._cleanup", () => {
           expect(error.closeEvent).toBe(closeEvent);
         });
       })
-      .then(done);
+      .then(() => done());
   });
 
   test("emits 'state' event when done", () => {
     const spy = jest.fn();
-    this.mopidy.on("state", spy);
+    mopidy.on("state", spy);
 
-    this.mopidy._cleanup({});
+    mopidy._cleanup({});
 
     expect(spy).toBeCalledWith("state:offline");
   });
 
   test("emits 'state:offline' event when done", () => {
     const spy = jest.fn();
-    this.mopidy.on("state:offline", spy);
+    mopidy.on("state:offline", spy);
 
-    this.mopidy._cleanup({});
+    mopidy._cleanup({});
 
     expect(spy).toBeCalledWith();
   });
@@ -249,10 +249,10 @@ describe("._cleanup", () => {
 
 describe("._reconnect", () => {
   test("is called when the state changes to offline", () => {
-    const spy = jest.spyOn(this.mopidy, "_reconnect");
-    this.mopidy._delegateEvents();
+    const spy = jest.spyOn(mopidy, "_reconnect");
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("state:offline");
+    mopidy.emit("state:offline");
     jest.runOnlyPendingTimers();
 
     expect(spy).toBeCalledWith();
@@ -260,18 +260,18 @@ describe("._reconnect", () => {
 
   test("tries to connect after an increasing backoff delay", () => {
     const connectStub = jest
-      .spyOn(this.mopidy, "connect")
+      .spyOn(mopidy, "connect")
       .mockImplementation(() => {});
     const stateSpy = jest.fn();
-    this.mopidy.on("state", stateSpy);
+    mopidy.on("state", stateSpy);
     const pendingSpy = jest.fn();
-    this.mopidy.on("reconnectionPending", pendingSpy);
+    mopidy.on("reconnectionPending", pendingSpy);
     const reconnectingSpy = jest.fn();
-    this.mopidy.on("reconnecting", reconnectingSpy);
+    mopidy.on("reconnecting", reconnectingSpy);
 
     expect(connectStub).toBeCalledTimes(0);
 
-    this.mopidy._reconnect();
+    mopidy._reconnect();
     jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 1000,
@@ -287,7 +287,7 @@ describe("._reconnect", () => {
     stateSpy.mockClear();
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
-    this.mopidy._reconnect();
+    mopidy._reconnect();
     jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 2000,
@@ -306,7 +306,7 @@ describe("._reconnect", () => {
     stateSpy.mockClear();
     pendingSpy.mockClear();
     reconnectingSpy.mockClear();
-    this.mopidy._reconnect();
+    mopidy._reconnect();
     jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 4000,
@@ -325,17 +325,17 @@ describe("._reconnect", () => {
 
   test("tries to connect at least about once per minute", () => {
     const connectStub = jest
-      .spyOn(this.mopidy, "connect")
+      .spyOn(mopidy, "connect")
       .mockImplementation(() => {});
     const stateSpy = jest.fn();
-    this.mopidy.on("state", stateSpy);
+    mopidy.on("state", stateSpy);
     const pendingSpy = jest.fn();
-    this.mopidy.on("reconnectionPending", pendingSpy);
-    this.mopidy._backoffDelay = this.mopidy._settings.backoffDelayMax;
+    mopidy.on("reconnectionPending", pendingSpy);
+    mopidy._backoffDelay = mopidy._settings.backoffDelayMax;
 
     expect(connectStub).toBeCalledTimes(0);
 
-    this.mopidy._reconnect();
+    mopidy._reconnect();
     jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 64000,
@@ -348,7 +348,7 @@ describe("._reconnect", () => {
 
     stateSpy.mockClear();
     pendingSpy.mockClear();
-    this.mopidy._reconnect();
+    mopidy._reconnect();
     jest.runOnlyPendingTimers();
     expect(stateSpy).toBeCalledWith("reconnectionPending", {
       timeToAttempt: 64000,
@@ -363,11 +363,11 @@ describe("._reconnect", () => {
 
   test("emits reconnectionPending after state:offline event", () => {
     const offlineSpy = jest.fn();
-    this.mopidy.on("state:offline", offlineSpy);
+    mopidy.on("state:offline", offlineSpy);
     const reconnectionSpy = jest.fn();
-    this.mopidy.on("reconnectionPending", reconnectionSpy);
+    mopidy.on("reconnectionPending", reconnectionSpy);
 
-    this.mopidy.emit("websocket:close");
+    mopidy.emit("websocket:close");
 
     expect(offlineSpy).toBeCalledWith();
 
@@ -383,36 +383,34 @@ describe("._reconnect", () => {
 
 describe("._resetBackoffDelay", () => {
   test("is called on 'websocket:open' event", () => {
-    const spy = jest.spyOn(this.mopidy, "_resetBackoffDelay");
-    this.mopidy._delegateEvents();
+    const spy = jest.spyOn(mopidy, "_resetBackoffDelay");
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("websocket:open");
+    mopidy.emit("websocket:open");
 
     expect(spy).toBeCalled();
   });
 
   test("resets the backoff delay to the minimum value", () => {
-    this.mopidy._backoffDelay = this.mopidy._backoffDelayMax;
+    mopidy._backoffDelay = mopidy._backoffDelayMax;
 
-    this.mopidy._resetBackoffDelay();
+    mopidy._resetBackoffDelay();
 
-    expect(this.mopidy._backoffDelay).toBe(
-      this.mopidy._settings.backoffDelayMin
-    );
+    expect(mopidy._backoffDelay).toBe(mopidy._settings.backoffDelayMin);
   });
 });
 
 describe(".close", () => {
   test("unregisters reconnection hooks", () => {
-    const offSpy = jest.spyOn(this.mopidy, "off");
+    const offSpy = jest.spyOn(mopidy, "off");
     const reconnectingSpy = jest.fn();
-    this.mopidy.on("reconnecting", reconnectingSpy);
+    mopidy.on("reconnecting", reconnectingSpy);
     const reconnectionPendingSpy = jest.fn();
-    this.mopidy.on("reconnectionPending", reconnectionPendingSpy);
+    mopidy.on("reconnectionPending", reconnectionPendingSpy);
 
-    this.mopidy.close();
+    mopidy.close();
 
-    expect(offSpy).toBeCalledWith("state:offline", this.mopidy._reconnect);
+    expect(offSpy).toBeCalledWith("state:offline", mopidy._reconnect);
 
     jest.runOnlyPendingTimers(); // Handle the "state:offline" event
 
@@ -421,9 +419,9 @@ describe(".close", () => {
   });
 
   test("closes the WebSocket", () => {
-    this.mopidy.close();
+    mopidy.close();
 
-    expect(this.mopidy._webSocket.close).toBeCalledWith();
+    expect(mopidy._webSocket.close).toBeCalledWith();
   });
 
   test("close without an open WebSocket does not fail", () => {
@@ -436,10 +434,10 @@ describe(".close", () => {
 describe("._handleWebSocketError", () => {
   test("is called on 'websocket:error' event", () => {
     const error = {};
-    const spy = jest.spyOn(this.mopidy, "_handleWebSocketError");
-    this.mopidy._delegateEvents();
+    const spy = jest.spyOn(mopidy, "_handleWebSocketError");
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("websocket:error", error);
+    mopidy.emit("websocket:error", error);
 
     expect(spy).toBeCalledWith(error);
   });
@@ -447,7 +445,7 @@ describe("._handleWebSocketError", () => {
   test("without stack logs the error to the console", () => {
     const error = {};
 
-    this.mopidy._handleWebSocketError(error);
+    mopidy._handleWebSocketError(error);
 
     expect(warn).toBeCalledWith("WebSocket error:", error);
   });
@@ -455,7 +453,7 @@ describe("._handleWebSocketError", () => {
   test("with stack logs the error to the console", () => {
     const error = { stack: "foo" };
 
-    this.mopidy._handleWebSocketError(error);
+    mopidy._handleWebSocketError(error);
 
     expect(warn).toBeCalledWith("WebSocket error:", error.stack);
   });
@@ -463,10 +461,10 @@ describe("._handleWebSocketError", () => {
 
 describe("._send", () => {
   test("adds JSON-RPC fields to the message", () => {
-    jest.spyOn(this.mopidy, "_nextRequestId").mockImplementation(() => 1);
+    jest.spyOn(mopidy, "_nextRequestId").mockImplementation(() => 1);
     const spy = jest.spyOn(JSON, "stringify");
 
-    this.mopidy._send({ method: "foo" });
+    mopidy._send({ method: "foo" });
 
     expect(spy).toBeCalledWith({
       jsonrpc: "2.0",
@@ -476,29 +474,29 @@ describe("._send", () => {
   });
 
   test("adds a resolver to the pending requests queue", () => {
-    jest.spyOn(this.mopidy, "_nextRequestId").mockImplementation(() => 1);
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
+    jest.spyOn(mopidy, "_nextRequestId").mockImplementation(() => 1);
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(0);
 
-    this.mopidy._send({ method: "foo" });
+    mopidy._send({ method: "foo" });
 
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(1);
-    expect(this.mopidy._pendingRequests[1].resolve).toBeDefined();
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(1);
+    expect(mopidy._pendingRequests[1].resolve).toBeDefined();
   });
 
   test("sends message on the WebSocket", () => {
-    expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
+    expect(mopidy._webSocket.send).toBeCalledTimes(0);
 
-    this.mopidy._send({ method: "foo" });
+    mopidy._send({ method: "foo" });
 
-    expect(this.mopidy._webSocket.send).toBeCalledTimes(1);
+    expect(mopidy._webSocket.send).toBeCalledTimes(1);
   });
 
   test("emits a 'websocket:outgoingMessage' event", () => {
     const spy = jest.fn();
-    this.mopidy.on("websocket:outgoingMessage", spy);
-    jest.spyOn(this.mopidy, "_nextRequestId").mockImplementation(() => 1);
+    mopidy.on("websocket:outgoingMessage", spy);
+    jest.spyOn(mopidy, "_nextRequestId").mockImplementation(() => 1);
 
-    this.mopidy._send({ method: "foo" });
+    mopidy._send({ method: "foo" });
 
     expect(spy).toBeCalledWith({
       jsonrpc: "2.0",
@@ -508,14 +506,14 @@ describe("._send", () => {
   });
 
   test("immediately rejects request if CONNECTING", (done) => {
-    this.mopidy._webSocket.readyState = Mopidy.WebSocket.CONNECTING;
+    mopidy._webSocket.readyState = Mopidy.WebSocket.CONNECTING;
 
-    const promise = this.mopidy._send({ method: "foo" });
+    const promise = mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
+        expect(mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
         expect(error.message).toBe("WebSocket is still connecting");
@@ -524,14 +522,14 @@ describe("._send", () => {
   });
 
   test("immediately rejects request if CLOSING", (done) => {
-    this.mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSING;
+    mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSING;
 
-    const promise = this.mopidy._send({ method: "foo" });
+    const promise = mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
+        expect(mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
         expect(error.message).toBe("WebSocket is closing");
@@ -540,14 +538,14 @@ describe("._send", () => {
   });
 
   test("immediately rejects request if CLOSED", (done) => {
-    this.mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSED;
+    mopidy._webSocket.readyState = Mopidy.WebSocket.CLOSED;
 
-    const promise = this.mopidy._send({ method: "foo" });
+    const promise = mopidy._send({ method: "foo" });
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.mopidy._webSocket.send).toBeCalledTimes(0);
+        expect(mopidy._webSocket.send).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(Mopidy.ConnectionError);
         expect(error.message).toBe("WebSocket is closed");
@@ -558,10 +556,10 @@ describe("._send", () => {
 
 describe("._nextRequestId", () => {
   test("returns an ever increasing ID", () => {
-    const base = this.mopidy._nextRequestId();
-    expect(this.mopidy._nextRequestId()).toBe(base + 1);
-    expect(this.mopidy._nextRequestId()).toBe(base + 2);
-    expect(this.mopidy._nextRequestId()).toBe(base + 3);
+    const base = mopidy._nextRequestId();
+    expect(mopidy._nextRequestId()).toBe(base + 1);
+    expect(mopidy._nextRequestId()).toBe(base + 2);
+    expect(mopidy._nextRequestId()).toBe(base + 3);
   });
 });
 
@@ -569,17 +567,17 @@ describe("._handleMessage", () => {
   test("is called on 'websocket:incomingMessage' event", () => {
     const messageEvent = {};
     const stub = jest
-      .spyOn(this.mopidy, "_handleMessage")
+      .spyOn(mopidy, "_handleMessage")
       .mockImplementation(() => {});
-    this.mopidy._delegateEvents();
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("websocket:incomingMessage", messageEvent);
+    mopidy.emit("websocket:incomingMessage", messageEvent);
 
     expect(stub).toBeCalledWith(messageEvent);
   });
 
   test("passes JSON-RPC responses on to _handleResponse", () => {
-    const spy = jest.spyOn(this.mopidy, "_handleResponse");
+    const spy = jest.spyOn(mopidy, "_handleResponse");
     const message = {
       jsonrpc: "2.0",
       id: 1,
@@ -587,14 +585,14 @@ describe("._handleMessage", () => {
     };
     const messageEvent = { data: JSON.stringify(message) };
 
-    this.mopidy._handleMessage(messageEvent);
+    mopidy._handleMessage(messageEvent);
 
     expect(spy).toBeCalledWith(message);
   });
 
   test("passes events on to _handleEvent", () => {
     const stub = jest
-      .spyOn(this.mopidy, "_handleEvent")
+      .spyOn(mopidy, "_handleEvent")
       .mockImplementation(() => {});
     const message = {
       event: "track_playback_started",
@@ -602,7 +600,7 @@ describe("._handleMessage", () => {
     };
     const messageEvent = { data: JSON.stringify(message) };
 
-    this.mopidy._handleMessage(messageEvent);
+    mopidy._handleMessage(messageEvent);
 
     expect(stub).toBeCalledWith(message);
   });
@@ -610,7 +608,7 @@ describe("._handleMessage", () => {
   test("logs unknown messages", () => {
     const messageEvent = { data: JSON.stringify({ foo: "bar" }) };
 
-    this.mopidy._handleMessage(messageEvent);
+    mopidy._handleMessage(messageEvent);
 
     expect(warn).toBeCalledWith(
       `Unknown message type received. Message was: ${messageEvent.data}`
@@ -620,7 +618,7 @@ describe("._handleMessage", () => {
   test("logs JSON parsing errors", () => {
     const messageEvent = { data: "foobarbaz" };
 
-    this.mopidy._handleMessage(messageEvent);
+    mopidy._handleMessage(messageEvent);
 
     expect(warn).toBeCalledWith(
       `WebSocket message parsing failed. Message was: ${messageEvent.data}`
@@ -636,7 +634,7 @@ describe("._handleResponse", () => {
       result: null,
     };
 
-    this.mopidy._handleResponse(responseMessage);
+    mopidy._handleResponse(responseMessage);
 
     expect(warn).toBeCalledWith(
       "Unexpected response received. Message was:",
@@ -645,29 +643,29 @@ describe("._handleResponse", () => {
   });
 
   test("removes the matching request from the pending queue", () => {
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
-    this.mopidy._send({ method: "bar" });
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(1);
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(0);
+    mopidy._send({ method: "bar" });
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(1);
 
-    this.mopidy._handleResponse({
+    mopidy._handleResponse({
       jsonrpc: "2.0",
-      id: Object.keys(this.mopidy._pendingRequests)[0],
+      id: Object.keys(mopidy._pendingRequests)[0],
       result: "baz",
     });
 
-    expect(Object.keys(this.mopidy._pendingRequests).length).toBe(0);
+    expect(Object.keys(mopidy._pendingRequests).length).toBe(0);
   });
 
   test("resolves requests which get results back", (done) => {
-    const promise = this.mopidy._send({ method: "bar" });
+    const promise = mopidy._send({ method: "bar" });
     const responseResult = {};
     const responseMessage = {
       jsonrpc: "2.0",
-      id: Object.keys(this.mopidy._pendingRequests)[0],
+      id: Object.keys(mopidy._pendingRequests)[0],
       result: responseResult,
     };
 
-    this.mopidy._handleResponse(responseMessage);
+    mopidy._handleResponse(responseMessage);
 
     expect.hasAssertions();
     promise
@@ -678,7 +676,7 @@ describe("._handleResponse", () => {
   });
 
   test("rejects and logs requests which get errors back", (done) => {
-    const promise = this.mopidy._send({ method: "bar" });
+    const promise = mopidy._send({ method: "bar" });
     const responseError = {
       code: -32601,
       message: "Method not found",
@@ -686,11 +684,11 @@ describe("._handleResponse", () => {
     };
     const responseMessage = {
       jsonrpc: "2.0",
-      id: Object.keys(this.mopidy._pendingRequests)[0],
+      id: Object.keys(mopidy._pendingRequests)[0],
       error: responseError,
     };
 
-    this.mopidy._handleResponse(responseMessage);
+    mopidy._handleResponse(responseMessage);
 
     expect.hasAssertions();
     promise
@@ -705,7 +703,7 @@ describe("._handleResponse", () => {
   });
 
   test("rejects and logs requests which get errors without data", (done) => {
-    const promise = this.mopidy._send({ method: "bar" });
+    const promise = mopidy._send({ method: "bar" });
     const responseError = {
       code: -32601,
       message: "Method not found",
@@ -713,11 +711,11 @@ describe("._handleResponse", () => {
     };
     const responseMessage = {
       jsonrpc: "2.0",
-      id: Object.keys(this.mopidy._pendingRequests)[0],
+      id: Object.keys(mopidy._pendingRequests)[0],
       error: responseError,
     };
 
-    this.mopidy._handleResponse(responseMessage);
+    mopidy._handleResponse(responseMessage);
 
     expect.hasAssertions();
     promise
@@ -733,13 +731,13 @@ describe("._handleResponse", () => {
   });
 
   test("rejects and logs responses without result or error", (done) => {
-    const promise = this.mopidy._send({ method: "bar" });
+    const promise = mopidy._send({ method: "bar" });
     const responseMessage = {
       jsonrpc: "2.0",
-      id: Object.keys(this.mopidy._pendingRequests)[0],
+      id: Object.keys(mopidy._pendingRequests)[0],
     };
 
-    this.mopidy._handleResponse(responseMessage);
+    mopidy._handleResponse(responseMessage);
 
     expect.hasAssertions();
     promise
@@ -761,28 +759,28 @@ describe("._handleResponse", () => {
 describe("._handleEvent", () => {
   test("emits all server side events on 'event' event", () => {
     const spy = jest.fn();
-    this.mopidy.on("event", spy);
+    mopidy.on("event", spy);
     const track = {};
     const message = {
       event: "track_playback_started",
       track,
     };
 
-    this.mopidy._handleEvent(message);
+    mopidy._handleEvent(message);
 
     expect(spy).toBeCalledWith("event:trackPlaybackStarted", { track });
   });
 
   test("emits server side events on 'event:*' events", () => {
     const spy = jest.fn();
-    this.mopidy.on("event:trackPlaybackStarted", spy);
+    mopidy.on("event:trackPlaybackStarted", spy);
     const track = {};
     const message = {
       event: "track_playback_started",
       track,
     };
 
-    this.mopidy._handleEvent(message);
+    mopidy._handleEvent(message);
 
     expect(spy).toBeCalledWith({ track });
   });
@@ -790,10 +788,10 @@ describe("._handleEvent", () => {
 
 describe("._getApiSpec", () => {
   test("is called on 'websocket:open' event", () => {
-    const spy = jest.spyOn(this.mopidy, "_getApiSpec");
-    this.mopidy._delegateEvents();
+    const spy = jest.spyOn(mopidy, "_getApiSpec");
+    mopidy._delegateEvents();
 
-    this.mopidy.emit("websocket:open");
+    mopidy.emit("websocket:open");
 
     expect(spy).toBeCalledWith();
   });
@@ -801,14 +799,14 @@ describe("._getApiSpec", () => {
   test("gets API description from server and calls _createApi", (done) => {
     const methods = {};
     const sendStub = jest
-      .spyOn(this.mopidy, "_send")
+      .spyOn(mopidy, "_send")
       .mockReturnValue(Promise.resolve(methods));
     const createApiStub = jest
-      .spyOn(this.mopidy, "_createApi")
+      .spyOn(mopidy, "_createApi")
       .mockImplementation(() => {});
 
     expect.hasAssertions();
-    this.mopidy
+    mopidy
       ._getApiSpec()
       .then(() => {
         expect(sendStub).toBeCalledWith({ method: "core.describe" });
@@ -820,10 +818,10 @@ describe("._getApiSpec", () => {
 
 describe("._createApi", () => {
   test("can create an API with methods on the root object", () => {
-    expect(this.mopidy.hello).toBeUndefined();
-    expect(this.mopidy.hi).toBeUndefined();
+    expect(mopidy.hello).toBeUndefined();
+    expect(mopidy.hi).toBeUndefined();
 
-    this.mopidy._createApi({
+    mopidy._createApi({
       hello: {
         description: "Says hello",
         params: [],
@@ -834,121 +832,121 @@ describe("._createApi", () => {
       },
     });
 
-    expect(typeof this.mopidy.hello).toBe("function");
-    expect(this.mopidy.hello.description).toBe("Says hello");
-    expect(this.mopidy.hello.params).toEqual([]);
-    expect(typeof this.mopidy.hi).toBe("function");
-    expect(this.mopidy.hi.description).toBe("Says hi");
-    expect(this.mopidy.hi.params).toEqual([]);
+    expect(typeof mopidy.hello).toBe("function");
+    expect(mopidy.hello.description).toBe("Says hello");
+    expect(mopidy.hello.params).toEqual([]);
+    expect(typeof mopidy.hi).toBe("function");
+    expect(mopidy.hi.description).toBe("Says hi");
+    expect(mopidy.hi.params).toEqual([]);
   });
 
   test("can create an API with methods on a sub-object", () => {
-    expect(this.mopidy.hello).toBeUndefined();
+    expect(mopidy.hello).toBeUndefined();
 
-    this.mopidy._createApi({
+    mopidy._createApi({
       "hello.world": {
         description: "Says hello to the world",
         params: [],
       },
     });
 
-    expect(this.mopidy.hello).toBeDefined();
-    expect(typeof this.mopidy.hello.world).toBe("function");
+    expect(mopidy.hello).toBeDefined();
+    expect(typeof mopidy.hello.world).toBe("function");
   });
 
   test("strips off 'core' from method paths", () => {
-    expect(this.mopidy.hello).toBeUndefined();
+    expect(mopidy.hello).toBeUndefined();
 
-    this.mopidy._createApi({
+    mopidy._createApi({
       "core.hello.world": {
         description: "Says hello to the world",
         params: [],
       },
     });
 
-    expect(this.mopidy.hello).toBeDefined();
-    expect(typeof this.mopidy.hello.world).toBe("function");
+    expect(mopidy.hello).toBeDefined();
+    expect(typeof mopidy.hello.world).toBe("function");
   });
 
   test("converts snake_case to camelCase", () => {
-    expect(this.mopidy.mightyGreetings).toBeUndefined();
+    expect(mopidy.mightyGreetings).toBeUndefined();
 
-    this.mopidy._createApi({
+    mopidy._createApi({
       "mighty_greetings.hello_world": {
         description: "Says hello to the world",
         params: [],
       },
     });
 
-    expect(this.mopidy.mightyGreetings).toBeDefined();
-    expect(typeof this.mopidy.mightyGreetings.helloWorld).toBe("function");
+    expect(mopidy.mightyGreetings).toBeDefined();
+    expect(typeof mopidy.mightyGreetings.helloWorld).toBe("function");
   });
 
   test("triggers 'state' event when API is ready for use", () => {
     const spy = jest.fn();
-    this.mopidy.on("state", spy);
+    mopidy.on("state", spy);
 
-    this.mopidy._createApi({});
+    mopidy._createApi({});
 
     expect(spy).toBeCalledWith("state:online");
   });
 
   test("triggers 'state:online' event when API is ready for use", () => {
     const spy = jest.fn();
-    this.mopidy.on("state:online", spy);
+    mopidy.on("state:online", spy);
 
-    this.mopidy._createApi({});
+    mopidy._createApi({});
 
     expect(spy).toBeCalledWith();
   });
 });
 
 describe("API method calls", () => {
+  var sendStub;
+
   beforeEach(() => {
-    this.mopidy = new Mopidy({
-      webSocket: this.openWebSocket,
+    mopidy = new Mopidy({
+      webSocket: openWebSocket,
     });
-    this.mopidy._createApi({
+    mopidy._createApi({
       foo: {
         params: ["bar", "baz"],
       },
     });
-    this.sendStub = jest
-      .spyOn(this.mopidy, "_send")
-      .mockImplementation(() => {});
+    sendStub = jest.spyOn(mopidy, "_send").mockImplementation(() => {});
   });
 
   test("sends no params if no arguments passed to function", () => {
-    this.mopidy.foo();
+    mopidy.foo();
 
-    expect(this.sendStub).toBeCalledWith({ method: "foo" });
+    expect(sendStub).toBeCalledWith({ method: "foo" });
   });
 
   test("sends by-position if argument is a list", () => {
-    this.mopidy.foo([31, 97]);
+    mopidy.foo([31, 97]);
 
-    expect(this.sendStub).toBeCalledWith({
+    expect(sendStub).toBeCalledWith({
       method: "foo",
       params: [31, 97],
     });
   });
 
   test("sends by-name if argument is an object", () => {
-    this.mopidy.foo({ bar: 31, baz: 97 });
+    mopidy.foo({ bar: 31, baz: 97 });
 
-    expect(this.sendStub).toBeCalledWith({
+    expect(sendStub).toBeCalledWith({
       method: "foo",
       params: { bar: 31, baz: 97 },
     });
   });
 
   test("rejects with error if more than one argument", (done) => {
-    const promise = this.mopidy.foo([1, 2], { c: 3, d: 4 });
+    const promise = mopidy.foo([1, 2], { c: 3, d: 4 });
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.sendStub).toBeCalledTimes(0);
+        expect(sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toBe(
           "Expected zero arguments, a single array, or a single object."
@@ -958,12 +956,12 @@ describe("API method calls", () => {
   });
 
   test("rejects with error if string", (done) => {
-    const promise = this.mopidy.foo("hello");
+    const promise = mopidy.foo("hello");
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.sendStub).toBeCalledTimes(0);
+        expect(sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(TypeError);
         expect(error.message).toBe("Expected an array or an object.");
@@ -972,12 +970,12 @@ describe("API method calls", () => {
   });
 
   test("rejects with error if number", (done) => {
-    const promise = this.mopidy.foo(1337);
+    const promise = mopidy.foo(1337);
 
     expect.hasAssertions();
     promise
       .catch((error) => {
-        expect(this.sendStub).toBeCalledTimes(0);
+        expect(sendStub).toBeCalledTimes(0);
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(TypeError);
         expect(error.message).toBe("Expected an array or an object.");
