@@ -1179,7 +1179,7 @@ declare namespace Mopidy {
         /**
          * URI to browse
          */
-        uri: URI;
+        uri: URI | null;
       }): Promise<models.Ref<any>[]>;
 
       /**
