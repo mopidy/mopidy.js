@@ -788,6 +788,38 @@ describe("._handleEvent", () => {
   });
 });
 
+describe("._handleJsonRpcNotification", () => {
+  test("emits all server side events on 'event' event", () => {
+    const spy = jest.fn();
+    this.mopidy.on("event", spy);
+    const track = {};
+    const message = {
+      jsonrpc: "2.0",
+      method: "track_playback_started",
+      params:{track},
+    };
+
+    this.mopidy._handleJsonRpcNotification(message);
+
+    expect(spy).toBeCalledWith("event:trackPlaybackStarted", { track });
+  });
+
+  test("emits server side events on 'event:*' events", () => {
+    const spy = jest.fn();
+    this.mopidy.on("event:trackPlaybackStarted", spy);
+    const track = {};
+    const message = {
+      jsonrpc: "2.0",
+      method: "track_playback_started",
+      params:{track},
+    };
+
+    this.mopidy._handleJsonRpcNotification(message);
+
+    expect(spy).toBeCalledWith({ track });
+  });
+});
+
 describe("._getApiSpec", () => {
   test("is called on 'websocket:open' event", () => {
     const spy = jest.spyOn(this.mopidy, "_getApiSpec");

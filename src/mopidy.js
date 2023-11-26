@@ -196,6 +196,8 @@ class Mopidy extends EventEmitter {
         this._handleResponse(data);
       } else if (Object.hasOwnProperty.call(data, "event")) {
         this._handleEvent(data);
+      } else if (Object.hasOwnProperty.call(data, "method")) {
+        this._handleJsonRpcNotification(data);
       } else {
         this._console.warn(
           `Unknown message type received. Message was: ${message.data}`
@@ -249,6 +251,12 @@ class Mopidy extends EventEmitter {
     const eventName = `event:${snakeToCamel(eventMessage.event)}`;
     this.emit("event", eventName, data);
     this.emit(eventName, data);
+  }
+
+  _handleJsonRpcNotification(notificaiton) {
+    const eventName = `event:${snakeToCamel(notificaiton.method)}`;
+    this.emit("event", eventName, notificaiton.params);
+    this.emit(eventName, notificaiton.params);
   }
 
   _getApiSpec() {
